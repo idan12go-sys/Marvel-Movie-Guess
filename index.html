@@ -1,0 +1,2807 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+
+        name="viewport"
+
+        content="width=device-width, initial-scale=1.0"
+
+    >
+
+    <title>Marvel Movie Guess</title>
+
+    <style>
+
+        * {
+
+            box-sizing: border-box;
+
+        }
+
+        html,
+
+        body {
+
+            margin: 0;
+
+            padding: 0;
+
+            width: 100%;
+
+            min-height: 100%;
+
+        }
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+
+                Arial,
+
+                Helvetica,
+
+                sans-serif;
+
+            color: white;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            /*
+
+            ==================================================
+
+            BACKGROUND
+
+            ==================================================
+
+            Change only this filename if you want
+
+            another background image.
+
+            Example:
+
+            images/background.jpg
+
+            ==================================================
+
+            */
+
+            background-image:
+
+                linear-gradient(
+
+                    rgba(0, 0, 0, 0.58),
+
+                    rgba(0, 0, 0, 0.70)
+
+                ),
+
+                url("images/background.jpg");
+
+            background-size: cover;
+
+            background-position: center;
+
+            background-repeat: no-repeat;
+
+            background-attachment: fixed;
+
+        }
+
+        /*
+
+        ======================================================
+
+        MAIN GAME
+
+        ======================================================
+
+        */
+
+        .game {
+
+            width: min(950px, 94vw);
+
+            padding: 35px 0;
+
+            text-align: center;
+
+        }
+
+        /*
+
+        ======================================================
+
+        TITLE
+
+        ======================================================
+
+        */
+
+        .title {
+
+            margin-bottom: 7px;
+
+            font-size:
+
+                clamp(36px, 6vw, 68px);
+
+            font-weight: 900;
+
+            letter-spacing: 4px;
+
+            text-transform: uppercase;
+
+            text-shadow:
+
+                0 0 10px
+
+                rgba(255, 0, 0, 0.85),
+
+                0 0 30px
+
+                rgba(255, 0, 0, 0.45);
+
+        }
+
+        .subtitle {
+
+            margin-bottom: 30px;
+
+            color: #ddd;
+
+            font-size: 17px;
+
+        }
+
+        /*
+
+        ======================================================
+
+        IMAGE CONTAINER
+
+        ======================================================
+
+        */
+
+        .image-container {
+
+            position: relative;
+
+            width: 100%;
+
+            aspect-ratio: 16 / 9;
+
+            overflow: hidden;
+
+            border-radius: 18px;
+
+            background: #050505;
+
+            border:
+
+                2px solid
+
+                rgba(255, 255, 255, 0.14);
+
+            box-shadow:
+
+                0 25px 70px
+
+                rgba(0, 0, 0, 0.82),
+
+                0 0 45px
+
+                rgba(255, 0, 0, 0.13);
+
+        }
+
+        #pixelCanvas {
+
+            display: block;
+
+            width: 100%;
+
+            height: 100%;
+
+        }
+
+        /*
+
+        ======================================================
+
+        SEARCH AREA
+
+        ======================================================
+
+        */
+
+        .search-area {
+
+            position: relative;
+
+            margin-top: 25px;
+
+            width: 100%;
+
+        }
+
+        /*
+
+        ======================================================
+
+        SEARCH BOX
+
+        ======================================================
+
+        */
+
+        #answer {
+
+            width: 100%;
+
+            padding: 18px 20px;
+
+            border-radius: 12px;
+
+            border:
+
+                2px solid
+
+                rgba(255, 255, 255, 0.15);
+
+            background:
+
+                rgba(0, 0, 0, 0.78);
+
+            color: white;
+
+            font-size: 18px;
+
+            outline: none;
+
+            transition:
+
+                border-color 0.2s,
+
+                box-shadow 0.2s;
+
+        }
+
+        #answer::placeholder {
+
+            color: #aaa;
+
+        }
+
+        #answer:focus {
+
+            border-color: #e62429;
+
+            box-shadow:
+
+                0 0 20px
+
+                rgba(230, 36, 41, 0.32);
+
+        }
+
+        /*
+
+        ======================================================
+
+        DROPDOWN
+
+        ======================================================
+
+        */
+
+        .dropdown {
+
+            position: absolute;
+
+            top: calc(100% + 5px);
+
+            left: 0;
+
+            right: 0;
+
+            z-index: 100;
+
+            display: none;
+
+            max-height: 320px;
+
+            overflow-y: auto;
+
+            background:
+
+                rgba(13, 13, 13, 0.98);
+
+            border:
+
+                1px solid
+
+                rgba(255, 255, 255, 0.14);
+
+            border-radius: 11px;
+
+            box-shadow:
+
+                0 18px 45px
+
+                rgba(0, 0, 0, 0.75);
+
+        }
+
+        .dropdown-item {
+
+            padding:
+
+                14px 18px;
+
+            text-align: left;
+
+            font-size: 16px;
+
+            cursor: pointer;
+
+            border-bottom:
+
+                1px solid
+
+                rgba(255, 255, 255, 0.06);
+
+            transition:
+
+                background 0.15s;
+
+        }
+
+        .dropdown-item:last-child {
+
+            border-bottom: none;
+
+        }
+
+        .dropdown-item:hover,
+
+        .dropdown-item.selected {
+
+            background:
+
+                rgba(230, 36, 41, 0.82);
+
+        }
+
+        /*
+
+        ======================================================
+
+        BUTTONS
+
+        ======================================================
+
+        */
+
+        .buttons {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 12px;
+
+        }
+
+        button {
+
+            flex: 1;
+
+            padding: 16px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            background: #e62429;
+
+            transition:
+
+                transform 0.15s,
+
+                filter 0.15s,
+
+                opacity 0.15s;
+
+        }
+
+        button:hover:not(:disabled) {
+
+            filter: brightness(1.16);
+
+            transform:
+
+                translateY(-2px);
+
+        }
+
+        button:active:not(:disabled) {
+
+            transform:
+
+                translateY(0);
+
+        }
+
+        button:disabled {
+
+            opacity: 0.5;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+        }
+
+        .hint-button {
+
+            background: #333;
+
+        }
+
+        /*
+
+        ======================================================
+
+        RESULT
+
+        ======================================================
+
+        */
+
+        .result {
+
+            min-height: 30px;
+
+            margin-top: 16px;
+
+            font-size: 19px;
+
+            font-weight: bold;
+
+        }
+
+        .correct {
+
+            color: #4cff78;
+
+        }
+
+        .wrong {
+
+            color: #ff5252;
+
+        }
+
+        .hint {
+
+            color: #ffc107;
+
+        }
+
+        /*
+
+        ======================================================
+
+        INFO
+
+        ======================================================
+
+        */
+
+        .info {
+
+            margin-top: 15px;
+
+            color: #aaa;
+
+            font-size: 13px;
+
+        }
+
+        /*
+
+        ======================================================
+
+        MOBILE
+
+        ======================================================
+
+        */
+
+        @media (max-width: 600px) {
+
+            .game {
+
+                width: 94vw;
+
+                padding:
+
+                    20px 0;
+
+            }
+
+            .buttons {
+
+                flex-direction: column;
+
+            }
+
+            .title {
+
+                letter-spacing: 2px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="game">
+
+    <div class="title">
+
+        Marvel Movie Guess
+
+    </div>
+
+    <div class="subtitle">
+
+        Can you recognize the movie?
+
+    </div>
+
+    <div class="image-container">
+
+        <canvas
+
+            id="pixelCanvas"
+
+        ></canvas>
+
+    </div>
+
+    <div class="search-area">
+
+        <input
+
+            id="answer"
+
+            type="text"
+
+            placeholder="Search for a Marvel movie..."
+
+            autocomplete="off"
+
+        >
+
+        <div
+
+            id="dropdown"
+
+            class="dropdown"
+
+        ></div>
+
+    </div>
+
+    <div class="buttons">
+
+        <button
+
+            id="guessButton"
+
+            type="button"
+
+        >
+
+            GUESS
+
+        </button>
+
+        <button
+
+            id="hintButton"
+
+            class="hint-button"
+
+            type="button"
+
+        >
+
+            HINT
+
+        </button>
+
+    </div>
+
+    <div
+
+        id="result"
+
+        class="result"
+
+    ></div>
+
+    <div class="info">
+
+        Search for a movie and select it from the list.
+
+    </div>
+
+</div>
+
+<script>
+
+/*
+
+=================================================================
+
+MOVIE DATABASE
+
+=================================================================
+
+*/
+
+const movies = [
+
+    /*
+
+    =============================================================
+
+    MCU
+
+    =============================================================
+
+    */
+
+    {
+
+        title: "Iron Man",
+
+        images: [
+
+            "images/header-credit-Marvel-Studios_5f741d77c06a0.jpg",
+
+            "images/hq720.jpg",
+
+            "images/MV5BMTMwOTIwMTk2Nl5BMl5BanBnXkFtZTcwNDEzNTIzMw@@._V1_.jpg",
+
+            "images/dfssdfs.jpg",
+
+            "images/1_eV6FlZoxptOo-l_qxTiWOg.jpg"
+
+        ]
+
+    },
+
+    {
+
+        title: "Iron Man 2",
+
+        images: [
+
+            "images/iron-man-2-whiplash.jpg",
+
+            "images/2026-08-25 15_52_16-Iron Man.2.2010.1080p.BluRay.x264.AAC.5.1-POOP.mp4 - VLC media player.png",
+
+            "images/f7j9gqm3ZdWBeTFLPJyaFE.jpg",
+
+            "images/2026-08-25 15_55_07-Iron Man.2.2010.1080p.BluRay.x264.AAC.5.1-POOP.mp4 - VLC media player.png",
+
+            "images/2026-08-25 15_58_57-Iron Man.2.2010.1080p.BluRay.x264.AAC.5.1-POOP.mp4 - VLC media player.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Thor",
+
+        images: [
+
+            "images/MV5BNTE4NDYwNTgwMl5BMl5BanBnXkFtZTgwNjg1MzUyMzE@._V1_QL75_UY281_CR86,0,500,281_.jpg",
+
+            "images/MV5BMjA5NjQ2MTAzN15BMl5BanBnXkFtZTcwOTY4MjIwNQ@@._V1_.jpg",
+
+            "images/MV5BOTMwNDg4NDc2Nl5BMl5BanBnXkFtZTgwOTQ3MjIzMzE@._V1_.jpg",
+
+            "images/mqdefault.jpg",
+
+            "images/2026-08-25 16_16_46-s7-thor.1080.mkv - VLC media player.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Captain America: The First Avenger",
+
+        images: [
+
+            "images/MV5BMTQ5Mjc2OTk0Ml5BMl5BanBnXkFtZTcwMTU2ODk5NQ@@._V1_.jpg",
+
+            "images/maxresdefault.jpg",
+
+            "images/2026-08-25 16_21_31-Captain.America.The First Avenger.2011.1080p.BluRay.AC3.X264-ETRG - VLC media pl.png",
+
+            "images/2026-08-25 16_23_42-Captain.America.The First Avenger.2011.1080p.BluRay.AC3.X264-ETRG - VLC media pl.png",
+
+            "images/2026-08-25 16_25_03-Captain.America.The First Avenger.2011.1080p.BluRay.AC3.X264-ETRG - VLC media pl.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "The Avengers",
+
+        images: [
+
+            "images/xzP7ZF523aCN2cd8nQh6Md-1200-80.jpg",
+
+            "images/the-avengers-2012.jpg",
+
+            "images/thumb_9D5479C0-D319-4F30-895A-6CE3FC959A1E.jpg",
+
+            "images/dsadawd.jpg",
+
+            "images/9b3239bb88191561711333206efd43aa.jpg"
+
+        ]
+
+    },
+
+    {
+
+        title: "Iron Man 3",
+
+        images: [
+
+            "images/1171126_Iron-Man-3.jpg",
+
+            "images/MV5BMTQ1Mjk2OTkxNF5BMl5BanBnXkFtZTcwMDg4NTQ2OA@@._V1_.jpg",
+
+            "images/VmNxShsJNDbyYY5kv5uSpN.jpg",
+
+            "images/2026-08-25 16_42_19-Iron.Man.3.2013.1080p.BluRay.x264.AAC.5.1-POOP.mp4 - VLC media player.png",
+
+            "images/2026-08-25 16_46_06-Iron.Man.3.2013.1080p.BluRay.x264.AAC.5.1-POOP.mp4 - VLC media player.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Thor: The Dark World",
+
+        images: [
+
+            "images/p9530219_i_h10_ae.jpg",
+
+            "images/2026-08-25 22_24_53-Thor The Dark World - VLC media player.png",
+
+            "images/2026-08-25 22_27_40-Thor The Dark World - VLC media player.png",
+
+            "images/2026-08-25 22_28_57-Thor The Dark World - VLC media player.png",
+
+            "images/2026-08-25 19_07_13-Thor The Dark World - VLC media player.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Captain America: The Winter Soldier",
+
+        images: [
+
+            "images/2026-08-25 19_10_02-Captain.America.The Winter.Soldier.2014.1080p.BluRay.DTS.X264-ETRG - VLC media p.png",
+
+            "images/2026-08-25 19_14_12-images and 1 more tab - File Explorer.png",
+
+            "images/2026-08-25 19_15_38-images and 1 more tab - File Explorer.png",
+
+            "images/2026-08-25 23_38_31-Captain.America.The Winter.Soldier.2014.1080p.BluRay.DTS.X264-ETRG - VLC media p.png",
+
+            "images/2026-08-25 19_19_37-images and 1 more tab - File Explorer.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Guardians of the Galaxy",
+
+        images: [
+
+            "images/2026-08-25 22_30_51-Guardians.of.the.Galaxy.2014.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
+
+            "images/2026-08-25 22_34_23-Guardians.of.the.Galaxy.2014.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
+
+            "images/2026-08-25 19_27_25-Guardians.of.the.Galaxy.2014.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
+
+            "images/2026-08-25 19_28_19-Guardians.of.the.Galaxy.2014.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
+
+            "images/2026-08-25 22_32_44-Guardians.of.the.Galaxy.2014.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Avengers: Age of Ultron",
+
+        images: [
+
+            "images/2026-08-25 22_37_06-Avengers.Age.of.Ultron.2015.1080p.BluRay.x264.YIFY.mp4 - VLC media player.png",
+
+            "images/2026-08-25 19_36_40-images and 1 more tab - File Explorer.png",
+
+            "images/2026-08-25 23_28_14-Avengers.Age.of.Ultron.2015.1080p.BluRay.x264.YIFY.mp4 - VLC media player.png",
+
+            "images/2026-08-25 19_40_35-images and 1 more tab - File Explorer.png",
+
+            "images/2026-08-25 23_31_21-Avengers.Age.of.Ultron.2015.1080p.BluRay.x264.YIFY.mp4 - VLC media player.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Ant-Man",
+
+        images: [
+
+            "images/2026-08-25 20_37_00-Ant-Man 2015 1080p BluRay x264 DTS-JYK.mkv - VLC media player.png",
+
+            "images/2026-08-25 20_38_20-Ant-Man 2015 1080p BluRay x264 DTS-JYK.mkv - VLC media player.png",
+
+            "images/2026-08-25 20_41_15-Ant-Man 2015 1080p BluRay x264 DTS-JYK.mkv - VLC media player.png",
+
+            "images/2026-08-25 20_42_55-Ant-Man 2015 1080p BluRay x264 DTS-JYK.mkv - VLC media player.png",
+
+            "images/2026-08-25 20_44_57-Ant-Man 2015 1080p BluRay x264 DTS-JYK.mkv - VLC media player.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Captain America: Civil War",
+
+        images: [
+
+            "images/2026-08-25 20_47_15-Captain.America.Civil.War.2016.Bluray.Heb.Qsubs.mkv - VLC media player.png",
+
+            "images/2026-08-25 20_50_36-Captain.America.Civil.War.2016.Bluray.Heb.Qsubs.mkv - VLC media player.png",
+
+            "images/2026-08-25 20_58_28-Captain.America.Civil.War.2016.Bluray.Heb.Qsubs.mkv - VLC media player.png",
+
+            "images/2026-08-25 21_01_28-Captain.America.Civil.War.2016.Bluray.Heb.Qsubs.mkv - VLC media player.png",
+
+            "images/2026-08-25 21_02_56-Captain.America.Civil.War.2016.Bluray.Heb.Qsubs.mkv - VLC media player.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Doctor Strange",
+
+        images: [
+
+            "images/2026-08-25 21_06_15-Doctor.Strange.2016.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media p.png",
+
+            "images/2026-08-25 21_07_39-Doctor.Strange.2016.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media p.png",
+
+            "images/2026-08-25 21_10_02-Doctor.Strange.2016.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media p.png",
+
+            "images/2026-08-25 21_11_11-Doctor.Strange.2016.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media p.png",
+
+            "images/2026-08-25 21_15_23-Doctor.Strange.2016.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media p.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Guardians of the Galaxy Vol. 2",
+
+        images: [
+
+            "images/2026-08-25 21_17_13-Guardians.of.the.Galaxy.Vol.2.2017.4K.UltraHD.BluRay.2160p.x264.DTSHD-MA.7.1-POO.png",
+
+            "images/2026-08-25 21_19_56-Guardians.of.the.Galaxy.Vol.2.2017.4K.UltraHD.BluRay.2160p.x264.DTSHD-MA.7.1-POO.png",
+
+            "images/2026-08-25 21_23_19-Guardians.of.the.Galaxy.Vol.2.2017.4K.UltraHD.BluRay.2160p.x264.DTSHD-MA.7.1-POO.png",
+
+            "images/2026-08-25 21_25_51-Guardians.of.the.Galaxy.Vol.2.2017.4K.UltraHD.BluRay.2160p.x264.DTSHD-MA.7.1-POO.png",
+
+            "images/2026-08-25 21_28_28-Guardians.of.the.Galaxy.Vol.2.2017.4K.UltraHD.BluRay.2160p.x264.DTSHD-MA.7.1-POO.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Spider-Man: Homecoming",
+
+        images: [
+
+            "images/2026-08-25 23_42_29-spider-man.homecoming.2017.1080p.bluray.x264-sparks.mkv - VLC media player.png",
+
+            "images/2026-08-25 21_33_41-spider-man.homecoming.2017.1080p.bluray.x264-sparks.mkv - VLC media player.png",
+
+            "images/2026-08-25 21_35_43-spider-man.homecoming.2017.1080p.bluray.x264-sparks.mkv - VLC media player.png",
+
+            "images/2026-08-25 21_36_37-spider-man.homecoming.2017.1080p.bluray.x264-sparks.mkv - VLC media player.png",
+
+            "images/2026-08-25 21_37_39-spider-man.homecoming.2017.1080p.bluray.x264-sparks.mkv - VLC media player.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Thor: Ragnarok",
+
+        images: [
+
+            "images/2026-08-25 21_44_24-Thor.Ragnarok.2017.4K.UltraHD.BluRay.2160p.x264.TrueHD.Atmos.7.1.AAC.7.1-POOP.mk.png",
+
+            "images/2026-08-25 22_22_48-Thor.Ragnarok.2017.4K.UltraHD.BluRay.2160p.x264.TrueHD.Atmos.7.1.AAC.7.1-POOP.mk.png",
+
+            "images/2026-08-25 21_52_43-2026-08-25 22_22_48-Thor.Ragnarok.2017.4K.UltraHD.BluRay.2160p.x264.TrueHD.Atmos.7.1.AAC.7.1-POOP.mk.png",
+
+            "images/2026-08-25 23_49_11-Thor.Ragnarok.2017.4K.UltraHD.BluRay.2160p.x264.TrueHD.Atmos.7.1.AAC.7.1-POOP.mk.png",
+
+            "images/2026-08-25 22_03_08-Thor.Ragnarok.2017.4K.UltraHD.BluRay.2160p.x264.TrueHD.Atmos.7.1.AAC.7.1-POOP.mk.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Black Panther",
+
+        images: [
+
+            "images/2026-08-26 00_00_49-Black.Panther.2018.1080p.BluRay.AC3.6CH.MkvCage.Com - VLC media player.png",
+
+            "images/2026-08-26 00_01_41-Black.Panther.2018.1080p.BluRay.AC3.6CH.MkvCage.Com - VLC media player.png",
+
+            "images/2026-08-26 00_06_38-Black.Panther.2018.1080p.BluRay.AC3.6CH.MkvCage.Com - VLC media player.png",
+
+            "images/2026-08-26 00_08_29-Black.Panther.2018.1080p.BluRay.AC3.6CH.MkvCage.Com - VLC media player.png",
+
+            "images/2026-08-26 00_10_00-Black.Panther.2018.1080p.BluRay.AC3.6CH.MkvCage.Com - VLC media player.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Avengers: Infinity War",
+
+        images: [
+
+            "images/2026-08-26 00_12_31-Avengers.Infinity.War.2018.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC .png",
+
+            "images/2026-08-26 00_14_08-Avengers.Infinity.War.2018.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC .png",
+
+            "images/2026-08-26 00_16_24-Avengers.Infinity.War.2018.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC .png",
+
+            "images/2026-08-26 00_20_25-Avengers.Infinity.War.2018.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC .png",
+
+            "images/2026-08-26 00_23_06-Avengers.Infinity.War.2018.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC .png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Ant-Man and the Wasp",
+
+        images: [
+
+            "images/2026-08-26 00_26_15-Ant-Man.and.the.Wasp.2018.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
+
+            "images/2026-08-26 00_35_34-Ant-Man.and.the.Wasp.2018.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
+
+            "images/2026-08-26 00_43_41-Ant-Man.and.the.Wasp.2018.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
+
+            "images/2026-08-26 00_46_50-Ant-Man.and.the.Wasp.2018.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
+
+            "images/2026-08-26 00_49_40-Ant-Man.and.the.Wasp.2018.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Captain Marvel",
+
+        images: [
+
+            "images/2026-08-26 00_53_03-Captain.Marvel.2019.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
+
+            "images/2026-08-26 01_00_42-Captain.Marvel.2019.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
+
+            "images/2026-08-26 01_03_18-Captain.Marvel.2019.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
+
+            "images/2026-08-26 01_07_16-Captain.Marvel.2019.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
+
+            "images/2026-08-26 01_09_41-Captain.Marvel.2019.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png"
+
+        ]
+
+    },
+
+    {
+
+        title: "Avengers: Endgame",
+
+        images: [
+
+            "images/Endgame-HERO-II-1024x499.png",
+
+            "images/2026-08-26 01_16_07-Avengers.Endgame.2019.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media.png",
+
+            "images/2026-08-26 01_20_10-Avengers.Endgame.2019.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media.png",
+
+            "images/2026-08-26 01_21_12-Avengers.Endgame.2019.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media.png",
+
+            "images/2026-08-26 01_22_30-Avengers.Endgame.2019.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media.png"
+
+        ]
+
+    },
+
+];
+
+/*
+
+=================================================================
+
+GAME VARIABLES
+
+=================================================================
+
+*/
+
+let currentMovie = null;
+
+let currentImage = null;
+
+let usedMovies = [];
+
+let selectedMovie = null;
+
+let selectedIndex = -1;
+
+let hintUsed = false;
+
+let answerLocked = false;
+
+let revealProgress = 0;
+
+// Images and movies that fail to load are skipped for this page session.
+const brokenImages = new Set();
+const brokenMovies = new Set();
+let imageLoadGeneration = 0;
+let nextMovieTimer = null;
+let revealFrameId = null;
+
+/*
+
+Movies that the user already guessed incorrectly
+
+during the CURRENT round.
+
+*/
+
+let eliminatedMovies = new Set();
+
+/*
+
+=================================================================
+
+ELEMENTS
+
+=================================================================
+
+*/
+
+const canvas =
+
+    document.getElementById(
+
+        "pixelCanvas"
+
+    );
+
+const ctx =
+
+    canvas.getContext("2d");
+
+const answerInput =
+
+    document.getElementById(
+
+        "answer"
+
+    );
+
+const dropdown =
+
+    document.getElementById(
+
+        "dropdown"
+
+    );
+
+const result =
+
+    document.getElementById(
+
+        "result"
+
+    );
+
+const guessButton =
+
+    document.getElementById(
+
+        "guessButton"
+
+    );
+
+const hintButton =
+
+    document.getElementById(
+
+        "hintButton"
+
+    );
+
+/*
+
+=================================================================
+
+CANVAS
+
+=================================================================
+
+*/
+
+function resizeCanvas() {
+
+    const rect =
+
+        canvas.getBoundingClientRect();
+
+    const dpr =
+
+        window.devicePixelRatio || 1;
+
+    canvas.width =
+
+        Math.max(
+
+            1,
+
+            Math.round(
+
+                rect.width * dpr
+
+            )
+
+        );
+
+    canvas.height =
+
+        Math.max(
+
+            1,
+
+            Math.round(
+
+                rect.height * dpr
+
+            )
+
+        );
+
+    ctx.setTransform(
+
+        dpr,
+
+        0,
+
+        0,
+
+        dpr,
+
+        0,
+
+        0
+
+    );
+
+    if (
+
+        currentImage
+
+        &&
+
+        currentImage.complete
+
+    ) {
+
+        drawPixelatedImage();
+
+    }
+
+}
+
+window.addEventListener(
+
+    "resize",
+
+    resizeCanvas
+
+);
+
+/*
+
+=================================================================
+
+LOAD RANDOM MOVIE
+
+=================================================================
+
+*/
+
+function loadRandomMovie() {
+
+    // Invalidate any older asynchronous image load or reveal animation.
+    imageLoadGeneration++;
+    const generation = imageLoadGeneration;
+
+    if (nextMovieTimer !== null) {
+        clearTimeout(nextMovieTimer);
+        nextMovieTimer = null;
+    }
+
+    if (revealFrameId !== null) {
+        cancelAnimationFrame(revealFrameId);
+        revealFrameId = null;
+    }
+
+    // Reset the round.
+    eliminatedMovies.clear();
+    currentMovie = null;
+    currentImage = null;
+    revealProgress = 0;
+    selectedMovie = null;
+    selectedIndex = -1;
+    hintUsed = false;
+    answerLocked = false;
+
+    answerInput.value = '';
+    answerInput.disabled = true;
+    guessButton.disabled = true;
+    hintButton.disabled = true;
+
+    result.textContent = 'Loading image...';
+    result.className = 'result';
+    hideDropdown();
+    clearGameCanvas();
+
+    // Exclude movies already used this cycle and movies with no working images.
+    let availableMovies = movies.filter(movie =>
+        !usedMovies.includes(movie) && !brokenMovies.has(movie)
+    );
+
+    // Start a new cycle when every remaining usable movie has appeared.
+    if (availableMovies.length === 0) {
+        const moviesWithPossibleImages = movies.filter(movie =>
+            !brokenMovies.has(movie)
+        );
+
+        if (moviesWithPossibleImages.length === 0) {
+            result.textContent = 'No working movie images were found. Check the images folder and filenames.';
+            result.className = 'result wrong';
+            answerInput.disabled = true;
+            guessButton.disabled = true;
+            hintButton.disabled = true;
+            return;
+        }
+
+        usedMovies = [];
+        availableMovies = moviesWithPossibleImages;
+    }
+
+    // Choose a random movie, then try its images one by one until one loads.
+    const randomIndex = Math.floor(Math.random() * availableMovies.length);
+    currentMovie = availableMovies[randomIndex];
+    usedMovies.push(currentMovie);
+
+    loadWorkingImageForMovie(currentMovie, generation);
+}
+
+
+function clearGameCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+
+    if (canvas.width !== Math.max(1, Math.round(rect.width * dpr)) ||
+        canvas.height !== Math.max(1, Math.round(rect.height * dpr))) {
+        canvas.width = Math.max(1, Math.round(rect.width * dpr));
+        canvas.height = Math.max(1, Math.round(rect.height * dpr));
+    }
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, rect.width, rect.height);
+}
+
+
+function loadWorkingImageForMovie(movie, generation) {
+
+    // Ignore callbacks belonging to an older round.
+    if (generation !== imageLoadGeneration || movie !== currentMovie) {
+        return;
+    }
+
+    // Keep the original image names exactly as entered in the movie database.
+    const imagesToTry = (Array.isArray(movie.images) ? movie.images : [])
+        .filter(imagePath => !brokenImages.has(imagePath));
+
+    // If none of this movie's images work, skip the entire movie.
+    if (imagesToTry.length === 0) {
+        brokenMovies.add(movie);
+        console.warn('Skipping movie: all images failed to load:', movie.title);
+
+        result.textContent = `Skipping ${movie.title}: no working images.`;
+        result.className = 'result hint';
+
+        // Use a new task rather than deep recursion if many movies are broken.
+        setTimeout(() => {
+            if (generation === imageLoadGeneration) {
+                loadRandomMovie();
+            }
+        }, 0);
+
+        return;
+    }
+
+    // Randomize the order so every remaining image has a chance to appear.
+    const randomIndex = Math.floor(Math.random() * imagesToTry.length);
+    const imagePath = imagesToTry[randomIndex];
+    const testImage = new Image();
+
+    testImage.onload = function () {
+        if (generation !== imageLoadGeneration || movie !== currentMovie) {
+            return;
+        }
+
+        // Treat an empty/invalid decoded image as a failed image too.
+        if (!testImage.naturalWidth || !testImage.naturalHeight) {
+            brokenImages.add(imagePath);
+            loadWorkingImageForMovie(movie, generation);
+            return;
+        }
+
+        currentImage = testImage;
+        revealProgress = 0;
+
+        resizeCanvas();
+        drawPixelatedImage();
+
+        result.textContent = '';
+        result.className = 'result';
+
+        answerInput.disabled = false;
+        guessButton.disabled = false;
+        hintButton.disabled = false;
+        answerInput.focus();
+
+        console.info('Loaded image:', imagePath);
+    };
+
+    testImage.onerror = function () {
+        if (generation !== imageLoadGeneration || movie !== currentMovie) {
+            return;
+        }
+
+        // Remember the broken path and try another image for this same movie.
+        brokenImages.add(imagePath);
+        console.warn('Skipping unavailable image:', imagePath);
+        loadWorkingImageForMovie(movie, generation);
+    };
+
+    // Do not change the path: it remains exactly as written in movies[].images.
+    testImage.src = imagePath;
+}
+
+
+function drawPixelatedImage() {
+
+    if (
+
+        !currentImage
+
+        ||
+
+        !currentImage.complete
+
+        ||
+
+        currentImage.naturalWidth === 0
+
+    ) {
+
+        return;
+
+    }
+
+    const rect =
+
+        canvas.getBoundingClientRect();
+
+    const width =
+
+        Math.max(
+
+            1,
+
+            rect.width
+
+        );
+
+    const height =
+
+        Math.max(
+
+            1,
+
+            rect.height
+
+        );
+
+    ctx.clearRect(
+
+        0,
+
+        0,
+
+        width,
+
+        height
+
+    );
+
+    /*
+
+    Keep 16:9 crop.
+
+    */
+
+    const imageRatio =
+
+        currentImage.width /
+
+        currentImage.height;
+
+    const canvasRatio =
+
+        width /
+
+        height;
+
+    let sourceX = 0;
+
+    let sourceY = 0;
+
+    let sourceWidth =
+
+        currentImage.width;
+
+    let sourceHeight =
+
+        currentImage.height;
+
+    if (
+
+        imageRatio > canvasRatio
+
+    ) {
+
+        sourceWidth =
+
+            currentImage.height *
+
+            canvasRatio;
+
+        sourceX =
+
+            (
+
+                currentImage.width -
+
+                sourceWidth
+
+            ) / 2;
+
+    }
+
+    else {
+
+        sourceHeight =
+
+            currentImage.width /
+
+            canvasRatio;
+
+        sourceY =
+
+            (
+
+                currentImage.height -
+
+                sourceHeight
+
+            ) / 2;
+
+    }
+
+    /*
+
+    Bigger number = more pixelated.
+
+    */
+
+    const startPixelSize =
+
+        20;
+
+    const endPixelSize =
+
+        1;
+
+    const pixelSize =
+
+        Math.max(
+
+            endPixelSize,
+
+            Math.round(
+
+                startPixelSize -
+
+                (
+
+                    startPixelSize -
+
+                    endPixelSize
+
+                ) *
+
+                revealProgress
+
+            )
+
+        );
+
+    /*
+
+    Create low resolution canvas.
+
+    */
+
+    const smallWidth =
+
+        Math.max(
+
+            1,
+
+            Math.ceil(
+
+                width /
+
+                pixelSize
+
+            )
+
+        );
+
+    const smallHeight =
+
+        Math.max(
+
+            1,
+
+            Math.ceil(
+
+                height /
+
+                pixelSize
+
+            )
+
+        );
+
+    const smallCanvas =
+
+        document.createElement(
+
+            "canvas"
+
+        );
+
+    smallCanvas.width =
+
+        smallWidth;
+
+    smallCanvas.height =
+
+        smallHeight;
+
+    const smallCtx =
+
+        smallCanvas.getContext(
+
+            "2d"
+
+        );
+
+    /*
+
+    No smoothing.
+
+    */
+
+    smallCtx.imageSmoothingEnabled =
+
+        false;
+
+    ctx.imageSmoothingEnabled =
+
+        false;
+
+    /*
+
+    Draw image into low-res canvas.
+
+    */
+
+    smallCtx.drawImage(
+
+        currentImage,
+
+        sourceX,
+
+        sourceY,
+
+        sourceWidth,
+
+        sourceHeight,
+
+        0,
+
+        0,
+
+        smallWidth,
+
+        smallHeight
+
+    );
+
+    /*
+
+    Scale it back up.
+
+    */
+
+    ctx.drawImage(
+
+        smallCanvas,
+
+        0,
+
+        0,
+
+        smallWidth,
+
+        smallHeight,
+
+        0,
+
+        0,
+
+        width,
+
+        height
+
+    );
+
+}
+
+/*
+
+=================================================================
+
+REVEAL IMAGE
+
+=================================================================
+
+*/
+
+function revealImage() {
+    const duration = 1100;
+    const startTime = performance.now();
+    const generation = imageLoadGeneration;
+
+    function animate(currentTime) {
+        if (generation !== imageLoadGeneration) {
+            revealFrameId = null;
+            return;
+        }
+
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+
+        revealProgress = eased;
+        drawPixelatedImage();
+
+        if (progress < 1) {
+            revealFrameId = requestAnimationFrame(animate);
+        } else {
+            revealProgress = 1;
+            revealFrameId = null;
+            drawPixelatedImage();
+        }
+    }
+
+    revealFrameId = requestAnimationFrame(animate);
+}
+
+
+answerInput.addEventListener(
+
+    "input",
+
+    function() {
+
+        selectedMovie = null;
+
+        selectedIndex = -1;
+
+        showSuggestions();
+
+    }
+
+);
+
+/*
+
+=================================================================
+
+FOCUS INPUT
+
+=================================================================
+
+*/
+
+answerInput.addEventListener(
+
+    "focus",
+
+    function() {
+
+        showSuggestions();
+
+    }
+
+);
+
+/*
+
+=================================================================
+
+SHOW SUGGESTIONS
+
+=================================================================
+
+*/
+
+function showSuggestions() {
+
+    const searchText =
+
+        answerInput.value
+
+            .toLowerCase()
+
+            .trim();
+
+    /*
+
+    IMPORTANT:
+
+    Filter out movies that have already
+
+    been guessed incorrectly.
+
+    */
+
+    const availableForSearch = movies.filter(movie =>
+        !eliminatedMovies.has(movie) &&
+        !brokenMovies.has(movie)
+    );
+
+    let matches;
+
+    if (
+
+        searchText === ""
+
+    ) {
+
+        matches =
+
+            availableForSearch.slice(
+
+                0,
+
+                30
+
+            );
+
+    }
+
+    else {
+
+        matches =
+
+            availableForSearch
+
+                .filter(
+
+                    movie =>
+
+                        movie.title
+
+                            .toLowerCase()
+
+                            .includes(
+
+                                searchText
+
+                            )
+
+                )
+
+                .slice(
+
+                    0,
+
+                    30
+
+                );
+
+    }
+
+    dropdown.innerHTML =
+
+        "";
+
+    /*
+
+    No results.
+
+    */
+
+    if (
+
+        matches.length === 0
+
+    ) {
+
+        const item =
+
+            document.createElement(
+
+                "div"
+
+            );
+
+        item.className =
+
+            "dropdown-item";
+
+        item.textContent =
+
+            "No movies found";
+
+        item.style.cursor =
+
+            "default";
+
+        dropdown.appendChild(
+
+            item
+
+        );
+
+        dropdown.style.display =
+
+            "block";
+
+        return;
+
+    }
+
+    /*
+
+    Create each option.
+
+    */
+
+    matches.forEach(
+
+        movie => {
+
+            const item =
+
+                document.createElement(
+
+                    "div"
+
+                );
+
+            item.className =
+
+                "dropdown-item";
+
+            item.textContent =
+
+                movie.title;
+
+            item.dataset.movieTitle =
+
+                movie.title;
+
+            item.addEventListener(
+
+                "click",
+
+                function() {
+
+                    selectMovie(
+
+                        movie
+
+                    );
+
+                }
+
+            );
+
+            dropdown.appendChild(
+
+                item
+
+            );
+
+        }
+
+    );
+
+    dropdown.style.display =
+
+        "block";
+
+}
+
+/*
+
+=================================================================
+
+SELECT MOVIE
+
+=================================================================
+
+*/
+
+function selectMovie(
+
+    movie
+
+) {
+
+    /*
+
+    Do not allow eliminated movies
+
+    to be selected.
+
+    */
+
+    if (
+
+        eliminatedMovies.has(movie) ||
+        brokenMovies.has(movie)
+
+    ) {
+
+        return;
+
+    }
+
+    selectedMovie =
+
+        movie;
+
+    answerInput.value =
+
+        movie.title;
+
+    selectedIndex = -1;
+
+    hideDropdown();
+
+    answerInput.focus();
+
+}
+
+/*
+
+=================================================================
+
+HIDE DROPDOWN
+
+=================================================================
+
+*/
+
+function hideDropdown() {
+
+    dropdown.style.display =
+
+        "none";
+
+}
+
+/*
+
+=================================================================
+
+KEYBOARD NAVIGATION
+
+=================================================================
+
+*/
+
+answerInput.addEventListener(
+
+    "keydown",
+
+    function(event) {
+
+        const items =
+
+            dropdown.querySelectorAll(
+
+                ".dropdown-item"
+
+            );
+
+        /*
+
+        DOWN
+
+        */
+
+        if (
+
+            event.key ===
+
+            "ArrowDown"
+
+        ) {
+
+            event.preventDefault();
+
+            if (
+
+                items.length === 0
+
+            ) {
+
+                return;
+
+            }
+
+            selectedIndex++;
+
+            if (
+
+                selectedIndex >=
+
+                items.length
+
+            ) {
+
+                selectedIndex = 0;
+
+            }
+
+            updateSelectedItem(
+
+                items
+
+            );
+
+        }
+
+        /*
+
+        UP
+
+        */
+
+        else if (
+
+            event.key ===
+
+            "ArrowUp"
+
+        ) {
+
+            event.preventDefault();
+
+            if (
+
+                items.length === 0
+
+            ) {
+
+                return;
+
+            }
+
+            selectedIndex--;
+
+            if (
+
+                selectedIndex < 0
+
+            ) {
+
+                selectedIndex =
+
+                    items.length - 1;
+
+            }
+
+            updateSelectedItem(
+
+                items
+
+            );
+
+        }
+
+        /*
+
+        ENTER
+
+        */
+
+        else if (
+
+            event.key ===
+
+            "Enter"
+
+        ) {
+
+            event.preventDefault();
+
+            if (
+
+                selectedIndex >= 0
+
+                &&
+
+                items[
+
+                    selectedIndex
+
+                ]
+
+            ) {
+
+                items[
+
+                    selectedIndex
+
+                ].click();
+
+            }
+
+            else {
+
+                checkAnswer();
+
+            }
+
+        }
+
+        /*
+
+        ESCAPE
+
+        */
+
+        else if (
+
+            event.key ===
+
+            "Escape"
+
+        ) {
+
+            hideDropdown();
+
+        }
+
+    }
+
+);
+
+/*
+
+=================================================================
+
+KEYBOARD SELECTION
+
+=================================================================
+
+*/
+
+function updateSelectedItem(
+
+    items
+
+) {
+
+    items.forEach(
+
+        item => {
+
+            item.classList.remove(
+
+                "selected"
+
+            );
+
+        }
+
+    );
+
+    if (
+
+        items[selectedIndex]
+
+    ) {
+
+        items[
+
+            selectedIndex
+
+        ].classList.add(
+
+            "selected"
+
+        );
+
+        items[
+
+            selectedIndex
+
+        ].scrollIntoView({
+
+            block: "nearest"
+
+        });
+
+    }
+
+}
+
+/*
+
+=================================================================
+
+CLICK OUTSIDE
+
+=================================================================
+
+*/
+
+document.addEventListener(
+
+    "click",
+
+    function(event) {
+
+        if (
+
+            !event.target.closest(
+
+                ".search-area"
+
+            )
+
+        ) {
+
+            hideDropdown();
+
+        }
+
+    }
+
+);
+
+/*
+
+=================================================================
+
+NORMALIZE
+
+=================================================================
+
+*/
+
+function normalize(
+
+    text
+
+) {
+
+    return text
+
+        .toLowerCase()
+
+        .replace(
+
+            /[^a-z0-9א-ת]/g,
+
+            ""
+
+        )
+
+        .trim();
+
+}
+
+/*
+
+=================================================================
+
+CHECK ANSWER
+
+=================================================================
+
+*/
+
+function checkAnswer() {
+
+    // Wait until a valid image has loaded before accepting a guess.
+    if (answerInput.disabled || !currentImage) {
+        return;
+    }
+
+    if (answerLocked) {
+
+        return;
+
+    }
+
+    let guessedMovie =
+
+        selectedMovie;
+
+    /*
+
+    If the user didn't choose an item
+
+    from the dropdown, try exact text.
+
+    */
+
+    if (
+
+        !guessedMovie
+
+    ) {
+
+        const typedAnswer =
+
+            normalize(
+
+                answerInput.value
+
+            );
+
+        guessedMovie =
+
+            movies.find(
+
+                movie =>
+
+                    !eliminatedMovies.has(movie) &&
+                    !brokenMovies.has(movie) &&
+
+                    normalize(
+
+                        movie.title
+
+                    )
+
+                    ===
+
+                    typedAnswer
+
+            );
+
+    }
+
+    /*
+
+    No valid movie.
+
+    */
+
+    if (
+
+        !guessedMovie
+
+    ) {
+
+        result.textContent =
+
+            "Choose a movie from the list.";
+
+        result.className =
+
+            "result wrong";
+
+        showSuggestions();
+
+        return;
+
+    }
+
+    /*
+
+    =============================================================
+
+    CORRECT
+
+    =============================================================
+
+    */
+
+    if (
+
+        guessedMovie ===
+
+        currentMovie
+
+    ) {
+
+        answerLocked =
+
+            true;
+
+        result.textContent =
+
+            "Correct! 🎉";
+
+        result.className =
+
+            "result correct";
+
+        guessButton.disabled =
+
+            true;
+
+        hintButton.disabled =
+
+            true;
+
+        hideDropdown();
+
+        /*
+
+        Reveal image.
+
+        */
+
+        revealImage();
+
+        /*
+
+        Wait, then load another movie.
+
+        */
+
+        nextMovieTimer = setTimeout(function() {
+            nextMovieTimer = null;
+            loadRandomMovie();
+        }, 3000);
+
+        return;
+
+    }
+
+    /*
+
+    =============================================================
+
+    WRONG
+
+    =============================================================
+
+    */
+
+    /*
+
+    Add the incorrect movie
+
+    to the eliminated set.
+
+    */
+
+    eliminatedMovies.add(
+
+        guessedMovie
+
+    );
+
+    /*
+
+    Clear selected movie.
+
+    */
+
+    selectedMovie =
+
+        null;
+
+    selectedIndex =
+
+        -1;
+
+    /*
+
+    Clear input.
+
+    */
+
+    answerInput.value =
+
+        "";
+
+    /*
+
+    Show wrong message.
+
+    */
+
+    result.textContent =
+
+        `"${guessedMovie.title}" is not correct.`;
+
+    result.className =
+
+        "result wrong";
+
+    /*
+
+    IMPORTANT:
+
+    Rebuild dropdown immediately.
+
+    The wrong movie will now be gone
+
+    from every search result until
+
+    the next round.
+
+    */
+
+    showSuggestions();
+
+    /*
+
+    Focus search again.
+
+    */
+
+    answerInput.focus();
+
+}
+
+/*
+
+=================================================================
+
+HINT
+
+=================================================================
+
+*/
+
+function useHint() {
+
+    if (
+
+        answerLocked
+
+    ) {
+
+        return;
+
+    }
+
+    if (
+
+        hintUsed
+
+    ) {
+
+        result.textContent =
+
+            "You already used the hint.";
+
+        result.className =
+
+            "result hint";
+
+        return;
+
+    }
+
+    hintUsed =
+
+        true;
+
+    const firstLetter =
+
+        currentMovie.title.charAt(
+
+            0
+
+        );
+
+    result.textContent =
+
+        `Hint: The movie starts with "${firstLetter}".`;
+
+    result.className =
+
+        "result hint";
+
+}
+
+/*
+
+=================================================================
+
+BUTTON EVENTS
+
+=================================================================
+
+*/
+
+guessButton.addEventListener(
+
+    "click",
+
+    function() {
+
+        checkAnswer();
+
+    }
+
+);
+
+hintButton.addEventListener(
+
+    "click",
+
+    function() {
+
+        useHint();
+
+    }
+
+);
+
+/*
+
+=================================================================
+
+START
+
+=================================================================
+
+*/
+
+resizeCanvas();
+
+loadRandomMovie();
+
+</script>
+
+</body>
+
+</html>
