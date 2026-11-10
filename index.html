@@ -219,6 +219,34 @@
         }
 
         /*
+        ======================================================
+        DIFFICULTY / IMAGE CLARITY INDICATOR
+        ======================================================
+        */
+
+        .difficulty-status {
+
+            margin-top: 12px;
+
+            color: #ddd;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            letter-spacing: 0.4px;
+
+        }
+
+        .difficulty-status .level-number {
+
+            color: #fff;
+
+            font-weight: 800;
+
+        }
+
+        /*
 
         ======================================================
 
@@ -594,6 +622,13 @@
 
         ></canvas>
 
+    </div>
+
+    <div class="difficulty-status" aria-live="polite">
+        Image clarity: Level
+        <span id="clarityLevel" class="level-number">1</span>
+        /
+        <span id="clarityTotal" class="level-number">7</span>
     </div>
 
     <div class="search-area">
@@ -1138,6 +1173,15 @@ let answerLocked = false;
 
 let revealProgress = 0;
 
+// Seven image-clarity levels: each number is the pixel block size.
+// Larger blocks are harder; smaller blocks reveal more detail.
+const pixelationLevels = [30, 24, 18, 13, 8, 4, 1];
+
+// Increase clarity after every two incorrect movie guesses.
+const WRONG_GUESSES_PER_LEVEL = 2;
+
+let wrongGuessCount = 0;
+
 // Images and movies that fail to load are skipped for this page session.
 const brokenImages = new Set();
 const brokenMovies = new Set();
@@ -1222,6 +1266,61 @@ const hintButton =
         "hintButton"
 
     );
+
+
+const clarityLevelElement =
+
+    document.getElementById(
+
+        "clarityLevel"
+
+    );
+
+const clarityTotalElement =
+
+    document.getElementById(
+
+        "clarityTotal"
+
+    );
+
+
+function getPixelationLevelIndex() {
+
+    return Math.min(
+
+        Math.floor(
+
+            wrongGuessCount / WRONG_GUESSES_PER_LEVEL
+
+        ),
+
+        pixelationLevels.length - 1
+
+    );
+
+}
+
+
+function updateDifficultyDisplay() {
+
+    const levelIndex = getPixelationLevelIndex();
+
+    clarityLevelElement.textContent =
+
+        String(levelIndex + 1);
+
+    clarityTotalElement.textContent =
+
+        String(pixelationLevels.length);
+
+    if (currentImage && currentImage.complete && currentImage.naturalWidth > 0) {
+
+        drawPixelatedImage();
+
+    }
+
+}
 
 /*
 
@@ -1386,6 +1485,7 @@ function loadRandomMovie() {
     currentMovie = null;
     currentImage = null;
     revealProgress = 0;
+    wrongGuessCount = 0;
     selectedMovie = null;
     selectedIndex = -1;
     hintUsed = false;
@@ -1398,6 +1498,7 @@ function loadRandomMovie() {
 
     result.textContent = 'Loading image...';
     result.className = 'result';
+    updateDifficultyDisplay();
     hideDropdown();
     clearGameCanvas();
 
@@ -1664,41 +1765,29 @@ function drawPixelatedImage() {
 
     /*
 
-    Bigger number = more pixelated.
+    Pixel size is controlled by the current difficulty level.
+    More wrong guesses = smaller pixel blocks = higher resolution.
+    On a correct answer, revealProgress animates the image to full clarity.
 
     */
 
-    const startPixelSize =
+    const levelIndex = getPixelationLevelIndex();
 
-        20;
+    const startPixelSize = pixelationLevels[levelIndex];
 
-    const endPixelSize =
+    const pixelSize = Math.max(
 
-        1;
+        1,
 
-    const pixelSize =
+        Math.round(
 
-        Math.max(
+            startPixelSize -
 
-            endPixelSize,
+            (startPixelSize - 1) * revealProgress
 
-            Math.round(
+        )
 
-                startPixelSize -
-
-                (
-
-                    startPixelSize -
-
-                    endPixelSize
-
-                ) *
-
-                revealProgress
-
-            )
-
-        );
+    );
 
     /*
 
@@ -2680,6 +2769,15 @@ function checkAnswer() {
 
     );
 
+    // Count this incorrect guess and raise the image clarity every two mistakes.
+    wrongGuessCount++;
+
+    const previousLevel = getPixelationLevelIndex();
+
+    updateDifficultyDisplay();
+
+    const newLevel = getPixelationLevelIndex();
+
     /*
 
     Clear selected movie.
@@ -2710,9 +2808,25 @@ function checkAnswer() {
 
     */
 
-    result.textContent =
+    if (newLevel > previousLevel) {
 
-        `"${guessedMovie.title}" is not correct.`;
+        result.textContent =
+
+            `"${guessedMovie.title}" is not correct. Image clarity increased to Level ${newLevel + 1}/${pixelationLevels.length}.`;
+
+    } else {
+
+        const guessesUntilNextLevel =
+
+            WRONG_GUESSES_PER_LEVEL -
+
+            (wrongGuessCount % WRONG_GUESSES_PER_LEVEL);
+
+        result.textContent =
+
+            `"${guessedMovie.title}" is not correct. ${guessesUntilNextLevel} more wrong guess${guessesUntilNextLevel === 1 ? "" : "es"} to increase image clarity.`;
+
+    }
 
     result.className =
 
@@ -2851,6 +2965,8 @@ START
 */
 
 resizeCanvas();
+
+updateDifficultyDisplay();
 
 loadRandomMovie();
 
