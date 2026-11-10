@@ -594,7 +594,143 @@
 
         }
 
-    </style>
+    
+        /* GITHUB IMAGE REPORT SYSTEM - BEGIN */
+        #communityReportControls {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 10000;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: calc(100vw - 28px);
+        }
+        .community-report-button {
+            border: 1px solid rgba(255,255,255,.18);
+            border-radius: 10px;
+            padding: 10px 13px;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .4px;
+            cursor: pointer;
+            box-shadow: 0 5px 18px rgba(0,0,0,.45);
+            flex: 0 0 auto;
+        }
+        #reportCurrentImageButton { background: #a91f27; }
+        #openReportedImagesButton { background: #292929; }
+        .community-report-button:hover { filter: brightness(1.18); }
+        #reportedImageBadge {
+            position: absolute;
+            top: 13px;
+            left: 13px;
+            z-index: 5;
+            display: none;
+            padding: 8px 12px;
+            border: 1px solid rgba(255,255,255,.22);
+            border-radius: 8px;
+            background: rgba(174, 28, 35, .95);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: .5px;
+            box-shadow: 0 4px 16px rgba(0,0,0,.5);
+            pointer-events: none;
+        }
+        #reportedImagesModal {
+            position: fixed;
+            inset: 0;
+            z-index: 10001;
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            overflow-y: auto;
+            padding: 28px 14px;
+            background: rgba(0,0,0,.88);
+            backdrop-filter: blur(7px);
+        }
+        #reportedImagesPanel {
+            width: min(1100px, 100%);
+            min-height: 240px;
+            padding: 22px;
+            border: 1px solid rgba(255,255,255,.16);
+            border-radius: 16px;
+            background: #111;
+            box-shadow: 0 25px 90px rgba(0,0,0,.7);
+            text-align: left;
+        }
+        #reportedImagesHeader {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+        #reportedImagesTitle {
+            margin: 0;
+            color: #fff;
+            font-size: clamp(22px, 4vw, 32px);
+        }
+        #closeReportedImagesButton {
+            flex: 0 0 auto;
+            width: auto;
+            padding: 9px 15px;
+            background: #333;
+        }
+        #reportedImagesStatus {
+            margin: 0 0 18px;
+            color: #bbb;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        #reportedImagesGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(245px, 100%), 1fr));
+            gap: 16px;
+        }
+        .reported-image-card {
+            min-width: 0;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,.13);
+            border-radius: 12px;
+            background: #1b1b1b;
+        }
+        .reported-image-card img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: contain;
+            background: #050505;
+        }
+        .reported-image-card-info { padding: 11px 12px 13px; }
+        .reported-image-movie {
+            margin: 0 0 5px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 800;
+        }
+        .reported-image-filename {
+            margin: 0 0 9px;
+            color: #bbb;
+            font-size: 12px;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+        .reported-image-link {
+            color: #ff777b;
+            font-size: 12px;
+            text-decoration: none;
+        }
+        .reported-image-link:hover { text-decoration: underline; }
+        @media (max-width: 600px) {
+            #communityReportControls { top: 8px; left: 8px; gap: 6px; }
+            .community-report-button { padding: 9px 10px; font-size: 10px; }
+            #reportedImagesPanel { padding: 15px; }
+            #reportedImagesModal { padding: 12px 8px; }
+        }
+        /* GITHUB IMAGE REPORT SYSTEM - END */
+</style>
 
 </head>
 
@@ -714,437 +850,28 @@ MOVIE DATABASE
 */
 
 const movies = [
-
-    /*
-
-    =============================================================
-
-    MCU
-
-    =============================================================
-
-    */
-
-    {
-
-        title: "Iron Man",
-
-        images: [
-
-            "images/header-credit-Marvel-Studios_5f741d77c06a0.jpg",
-
-            "images/hq720.jpg",
-
-            "images/MV5BMTMwOTIwMTk2Nl5BMl5BanBnXkFtZTcwNDEzNTIzMw@@._V1_.jpg",
-
-            "images/dfssdfs.jpg",
-
-            "images/1_eV6FlZoxptOo-l_qxTiWOg.jpg"
-
-        ]
-
-    },
-
-    {
-
-        title: "Iron Man 2",
-
-        images: [
-
-            "images/iron-man-2-whiplash.jpg",
-
-            "images/2026-08-25 15_52_16-Iron Man.2.2010.1080p.BluRay.x264.AAC.5.1-POOP.mp4 - VLC media player.png",
-
-            "images/f7j9gqm3ZdWBeTFLPJyaFE.jpg",
-
-            "images/2026-08-25 15_55_07-Iron Man.2.2010.1080p.BluRay.x264.AAC.5.1-POOP.mp4 - VLC media player.png",
-
-            "images/2026-08-25 15_58_57-Iron Man.2.2010.1080p.BluRay.x264.AAC.5.1-POOP.mp4 - VLC media player.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Thor",
-
-        images: [
-
-            "images/MV5BNTE4NDYwNTgwMl5BMl5BanBnXkFtZTgwNjg1MzUyMzE@._V1_QL75_UY281_CR86,0,500,281_.jpg",
-
-            "images/MV5BMjA5NjQ2MTAzN15BMl5BanBnXkFtZTcwOTY4MjIwNQ@@._V1_.jpg",
-
-            "images/MV5BOTMwNDg4NDc2Nl5BMl5BanBnXkFtZTgwOTQ3MjIzMzE@._V1_.jpg",
-
-            "images/mqdefault.jpg",
-
-            "images/2026-08-25 16_16_46-s7-thor.1080.mkv - VLC media player.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Captain America: The First Avenger",
-
-        images: [
-
-            "images/MV5BMTQ5Mjc2OTk0Ml5BMl5BanBnXkFtZTcwMTU2ODk5NQ@@._V1_.jpg",
-
-            "images/maxresdefault.jpg",
-
-            "images/2026-08-25 16_21_31-Captain.America.The First Avenger.2011.1080p.BluRay.AC3.X264-ETRG - VLC media pl.png",
-
-            "images/2026-08-25 16_23_42-Captain.America.The First Avenger.2011.1080p.BluRay.AC3.X264-ETRG - VLC media pl.png",
-
-            "images/2026-08-25 16_25_03-Captain.America.The First Avenger.2011.1080p.BluRay.AC3.X264-ETRG - VLC media pl.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "The Avengers",
-
-        images: [
-
-            "images/xzP7ZF523aCN2cd8nQh6Md-1200-80.jpg",
-
-            "images/the-avengers-2012.jpg",
-
-            "images/thumb_9D5479C0-D319-4F30-895A-6CE3FC959A1E.jpg",
-
-            "images/dsadawd.jpg",
-
-            "images/9b3239bb88191561711333206efd43aa.jpg"
-
-        ]
-
-    },
-
-    {
-
-        title: "Iron Man 3",
-
-        images: [
-
-            "images/1171126_Iron-Man-3.jpg",
-
-            "images/MV5BMTQ1Mjk2OTkxNF5BMl5BanBnXkFtZTcwMDg4NTQ2OA@@._V1_.jpg",
-
-            "images/VmNxShsJNDbyYY5kv5uSpN.jpg",
-
-            "images/2026-08-25 16_42_19-Iron.Man.3.2013.1080p.BluRay.x264.AAC.5.1-POOP.mp4 - VLC media player.png",
-
-            "images/2026-08-25 16_46_06-Iron.Man.3.2013.1080p.BluRay.x264.AAC.5.1-POOP.mp4 - VLC media player.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Thor: The Dark World",
-
-        images: [
-
-            "images/p9530219_i_h10_ae.jpg",
-
-            "images/2026-08-25 22_24_53-Thor The Dark World - VLC media player.png",
-
-            "images/2026-08-25 22_27_40-Thor The Dark World - VLC media player.png",
-
-            "images/2026-08-25 22_28_57-Thor The Dark World - VLC media player.png",
-
-            "images/2026-08-25 19_07_13-Thor The Dark World - VLC media player.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Captain America: The Winter Soldier",
-
-        images: [
-
-            "images/2026-08-25 19_10_02-Captain.America.The Winter.Soldier.2014.1080p.BluRay.DTS.X264-ETRG - VLC media p.png",
-
-            "images/2026-08-25 19_14_12-images and 1 more tab - File Explorer.png",
-
-            "images/2026-08-25 19_15_38-images and 1 more tab - File Explorer.png",
-
-            "images/2026-08-25 23_38_31-Captain.America.The Winter.Soldier.2014.1080p.BluRay.DTS.X264-ETRG - VLC media p.png",
-
-            "images/2026-08-25 19_19_37-images and 1 more tab - File Explorer.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Guardians of the Galaxy",
-
-        images: [
-
-            "images/2026-08-25 22_30_51-Guardians.of.the.Galaxy.2014.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
-
-            "images/2026-08-25 22_34_23-Guardians.of.the.Galaxy.2014.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
-
-            "images/2026-08-25 19_27_25-Guardians.of.the.Galaxy.2014.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
-
-            "images/2026-08-25 19_28_19-Guardians.of.the.Galaxy.2014.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
-
-            "images/2026-08-25 22_32_44-Guardians.of.the.Galaxy.2014.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Avengers: Age of Ultron",
-
-        images: [
-
-            "images/2026-08-25 22_37_06-Avengers.Age.of.Ultron.2015.1080p.BluRay.x264.YIFY.mp4 - VLC media player.png",
-
-            "images/2026-08-25 19_36_40-images and 1 more tab - File Explorer.png",
-
-            "images/2026-08-25 23_28_14-Avengers.Age.of.Ultron.2015.1080p.BluRay.x264.YIFY.mp4 - VLC media player.png",
-
-            "images/2026-08-25 19_40_35-images and 1 more tab - File Explorer.png",
-
-            "images/2026-08-25 23_31_21-Avengers.Age.of.Ultron.2015.1080p.BluRay.x264.YIFY.mp4 - VLC media player.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Ant-Man",
-
-        images: [
-
-            "images/2026-08-25 20_37_00-Ant-Man 2015 1080p BluRay x264 DTS-JYK.mkv - VLC media player.png",
-
-            "images/2026-08-25 20_38_20-Ant-Man 2015 1080p BluRay x264 DTS-JYK.mkv - VLC media player.png",
-
-            "images/2026-08-25 20_41_15-Ant-Man 2015 1080p BluRay x264 DTS-JYK.mkv - VLC media player.png",
-
-            "images/2026-08-25 20_42_55-Ant-Man 2015 1080p BluRay x264 DTS-JYK.mkv - VLC media player.png",
-
-            "images/2026-08-25 20_44_57-Ant-Man 2015 1080p BluRay x264 DTS-JYK.mkv - VLC media player.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Captain America: Civil War",
-
-        images: [
-
-            "images/2026-08-25 20_47_15-Captain.America.Civil.War.2016.Bluray.Heb.Qsubs.mkv - VLC media player.png",
-
-            "images/2026-08-25 20_50_36-Captain.America.Civil.War.2016.Bluray.Heb.Qsubs.mkv - VLC media player.png",
-
-            "images/2026-08-25 20_58_28-Captain.America.Civil.War.2016.Bluray.Heb.Qsubs.mkv - VLC media player.png",
-
-            "images/2026-08-25 21_01_28-Captain.America.Civil.War.2016.Bluray.Heb.Qsubs.mkv - VLC media player.png",
-
-            "images/2026-08-25 21_02_56-Captain.America.Civil.War.2016.Bluray.Heb.Qsubs.mkv - VLC media player.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Doctor Strange",
-
-        images: [
-
-            "images/2026-08-25 21_06_15-Doctor.Strange.2016.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media p.png",
-
-            "images/2026-08-25 21_07_39-Doctor.Strange.2016.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media p.png",
-
-            "images/2026-08-25 21_10_02-Doctor.Strange.2016.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media p.png",
-
-            "images/2026-08-25 21_11_11-Doctor.Strange.2016.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media p.png",
-
-            "images/2026-08-25 21_15_23-Doctor.Strange.2016.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media p.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Guardians of the Galaxy Vol. 2",
-
-        images: [
-
-            "images/2026-08-25 21_17_13-Guardians.of.the.Galaxy.Vol.2.2017.4K.UltraHD.BluRay.2160p.x264.DTSHD-MA.7.1-POO.png",
-
-            "images/2026-08-25 21_19_56-Guardians.of.the.Galaxy.Vol.2.2017.4K.UltraHD.BluRay.2160p.x264.DTSHD-MA.7.1-POO.png",
-
-            "images/2026-08-25 21_23_19-Guardians.of.the.Galaxy.Vol.2.2017.4K.UltraHD.BluRay.2160p.x264.DTSHD-MA.7.1-POO.png",
-
-            "images/2026-08-25 21_25_51-Guardians.of.the.Galaxy.Vol.2.2017.4K.UltraHD.BluRay.2160p.x264.DTSHD-MA.7.1-POO.png",
-
-            "images/2026-08-25 21_28_28-Guardians.of.the.Galaxy.Vol.2.2017.4K.UltraHD.BluRay.2160p.x264.DTSHD-MA.7.1-POO.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Spider-Man: Homecoming",
-
-        images: [
-
-            "images/2026-08-25 23_42_29-spider-man.homecoming.2017.1080p.bluray.x264-sparks.mkv - VLC media player.png",
-
-            "images/2026-08-25 21_33_41-spider-man.homecoming.2017.1080p.bluray.x264-sparks.mkv - VLC media player.png",
-
-            "images/2026-08-25 21_35_43-spider-man.homecoming.2017.1080p.bluray.x264-sparks.mkv - VLC media player.png",
-
-            "images/2026-08-25 21_36_37-spider-man.homecoming.2017.1080p.bluray.x264-sparks.mkv - VLC media player.png",
-
-            "images/2026-08-25 21_37_39-spider-man.homecoming.2017.1080p.bluray.x264-sparks.mkv - VLC media player.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Thor: Ragnarok",
-
-        images: [
-
-            "images/2026-08-25 21_44_24-Thor.Ragnarok.2017.4K.UltraHD.BluRay.2160p.x264.TrueHD.Atmos.7.1.AAC.7.1-POOP.mk.png",
-
-            "images/2026-08-25 22_22_48-Thor.Ragnarok.2017.4K.UltraHD.BluRay.2160p.x264.TrueHD.Atmos.7.1.AAC.7.1-POOP.mk.png",
-
-            "images/2026-08-25 21_52_43-2026-08-25 22_22_48-Thor.Ragnarok.2017.4K.UltraHD.BluRay.2160p.x264.TrueHD.Atmos.7.1.AAC.7.1-POOP.mk.png",
-
-            "images/2026-08-25 23_49_11-Thor.Ragnarok.2017.4K.UltraHD.BluRay.2160p.x264.TrueHD.Atmos.7.1.AAC.7.1-POOP.mk.png",
-
-            "images/2026-08-25 22_03_08-Thor.Ragnarok.2017.4K.UltraHD.BluRay.2160p.x264.TrueHD.Atmos.7.1.AAC.7.1-POOP.mk.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Black Panther",
-
-        images: [
-
-            "images/2026-08-26 00_00_49-Black.Panther.2018.1080p.BluRay.AC3.6CH.MkvCage.Com - VLC media player.png",
-
-            "images/2026-08-26 00_01_41-Black.Panther.2018.1080p.BluRay.AC3.6CH.MkvCage.Com - VLC media player.png",
-
-            "images/2026-08-26 00_06_38-Black.Panther.2018.1080p.BluRay.AC3.6CH.MkvCage.Com - VLC media player.png",
-
-            "images/2026-08-26 00_08_29-Black.Panther.2018.1080p.BluRay.AC3.6CH.MkvCage.Com - VLC media player.png",
-
-            "images/2026-08-26 00_10_00-Black.Panther.2018.1080p.BluRay.AC3.6CH.MkvCage.Com - VLC media player.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Avengers: Infinity War",
-
-        images: [
-
-            "images/2026-08-26 00_12_31-Avengers.Infinity.War.2018.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC .png",
-
-            "images/2026-08-26 00_14_08-Avengers.Infinity.War.2018.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC .png",
-
-            "images/2026-08-26 00_16_24-Avengers.Infinity.War.2018.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC .png",
-
-            "images/2026-08-26 00_20_25-Avengers.Infinity.War.2018.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC .png",
-
-            "images/2026-08-26 00_23_06-Avengers.Infinity.War.2018.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC .png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Ant-Man and the Wasp",
-
-        images: [
-
-            "images/2026-08-26 00_26_15-Ant-Man.and.the.Wasp.2018.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
-
-            "images/2026-08-26 00_35_34-Ant-Man.and.the.Wasp.2018.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
-
-            "images/2026-08-26 00_43_41-Ant-Man.and.the.Wasp.2018.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
-
-            "images/2026-08-26 00_46_50-Ant-Man.and.the.Wasp.2018.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
-
-            "images/2026-08-26 00_49_40-Ant-Man.and.the.Wasp.2018.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Captain Marvel",
-
-        images: [
-
-            "images/2026-08-26 00_53_03-Captain.Marvel.2019.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
-
-            "images/2026-08-26 01_00_42-Captain.Marvel.2019.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
-
-            "images/2026-08-26 01_03_18-Captain.Marvel.2019.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
-
-            "images/2026-08-26 01_07_16-Captain.Marvel.2019.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png",
-
-            "images/2026-08-26 01_09_41-Captain.Marvel.2019.1080p.BluRay.x264-SPARKS.mkv - VLC media player.png"
-
-        ]
-
-    },
-
-    {
-
-        title: "Avengers: Endgame",
-
-        images: [
-
-            "images/Endgame-HERO-II-1024x499.png",
-
-            "images/2026-08-26 01_16_07-Avengers.Endgame.2019.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media.png",
-
-            "images/2026-08-26 01_20_10-Avengers.Endgame.2019.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media.png",
-
-            "images/2026-08-26 01_21_12-Avengers.Endgame.2019.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media.png",
-
-            "images/2026-08-26 01_22_30-Avengers.Endgame.2019.2160p.4K.BluRay.x265.10bit.AAC5.1-[YTS.MX].mkv - VLC media.png"
-
-        ]
-
-    },
-
+  { title: "Iron Man", images: ["images/iron_man_01.jpg", "images/iron_man_02.jpg", "images/iron_man_03.jpg", "images/iron_man_04.jpg", "images/iron_man_05.jpg", "images/iron_man_06.jpg", "images/iron_man_07.jpg", "images/iron_man_08.jpg", "images/iron_man_09.jpg", "images/iron_man_10.jpg", "images/iron_man_11.jpg", "images/iron_man_12.jpg", "images/iron_man_13.jpg", "images/iron_man_14.jpg", "images/iron_man_15.jpg", "images/iron_man_16.jpg", "images/iron_man_17.jpg", "images/iron_man_18.jpg", "images/iron_man_19.jpg", "images/iron_man_20.jpg", "images/iron_man_21.jpg", "images/iron_man_22.jpg", "images/iron_man_23.jpg", "images/iron_man_24.jpg", "images/iron_man_25.jpg"] },
+  { title: "The Incredible Hulk", images: ["images/incredible_hulk_01.jpg", "images/incredible_hulk_02.jpg", "images/incredible_hulk_03.jpg", "images/incredible_hulk_04.jpg", "images/incredible_hulk_05.jpg", "images/incredible_hulk_06.jpg", "images/incredible_hulk_07.jpg", "images/incredible_hulk_08.jpg", "images/incredible_hulk_09.jpg", "images/incredible_hulk_10.jpg", "images/incredible_hulk_11.jpg", "images/incredible_hulk_12.jpg", "images/incredible_hulk_13.jpg", "images/incredible_hulk_14.jpg", "images/incredible_hulk_15.jpg", "images/incredible_hulk_16.jpg", "images/incredible_hulk_17.jpg", "images/incredible_hulk_18.jpg", "images/incredible_hulk_19.jpg", "images/incredible_hulk_20.jpg", "images/incredible_hulk_21.jpg", "images/incredible_hulk_22.jpg", "images/incredible_hulk_23.jpg"] },
+  { title: "Iron Man 2", images: ["images/iron_man_2_01.jpg", "images/iron_man_2_02.jpg", "images/iron_man_2_03.jpg", "images/iron_man_2_04.jpg", "images/iron_man_2_05.jpg", "images/iron_man_2_06.jpg", "images/iron_man_2_07.jpg", "images/iron_man_2_08.jpg", "images/iron_man_2_09.jpg", "images/iron_man_2_10.jpg", "images/iron_man_2_11.jpg", "images/iron_man_2_12.jpg", "images/iron_man_2_13.jpg", "images/iron_man_2_14.jpg", "images/iron_man_2_15.jpg", "images/iron_man_2_16.jpg", "images/iron_man_2_17.jpg", "images/iron_man_2_18.jpg", "images/iron_man_2_19.jpg", "images/iron_man_2_20.jpg", "images/iron_man_2_21.jpg", "images/iron_man_2_22.jpg"] },
+  { title: "Thor", images: ["images/thor_02.jpg", "images/thor_03.jpg", "images/thor_04.jpg", "images/thor_05.jpg", "images/thor_06.jpg", "images/thor_07.jpg", "images/thor_08.jpg", "images/thor_09.jpg", "images/thor_10.jpg", "images/thor_11.jpg", "images/thor_12.jpg", "images/thor_13.jpg", "images/thor_14.jpg", "images/thor_15.jpg", "images/thor_16.jpg", "images/thor_17.jpg", "images/thor_18.jpg", "images/thor_19.jpg", "images/thor_20.jpg", "images/thor_21.jpg", "images/thor_25.jpg"] },
+  { title: "Captain America: The First Avenger", images: ["images/captain_america_first_avenger_01.jpg", "images/captain_america_first_avenger_02.jpg", "images/captain_america_first_avenger_03.jpg", "images/captain_america_first_avenger_04.jpg", "images/captain_america_first_avenger_05.jpg", "images/captain_america_first_avenger_06.jpg", "images/captain_america_first_avenger_07.jpg", "images/captain_america_first_avenger_08.jpg", "images/captain_america_first_avenger_09.jpg", "images/captain_america_first_avenger_10.jpg", "images/captain_america_first_avenger_11.jpg", "images/captain_america_first_avenger_12.jpg", "images/captain_america_first_avenger_13.jpg", "images/captain_america_first_avenger_14.jpg", "images/captain_america_first_avenger_15.jpg", "images/captain_america_first_avenger_16.jpg", "images/captain_america_first_avenger_17.jpg", "images/captain_america_first_avenger_18.jpg", "images/captain_america_first_avenger_19.jpg", "images/captain_america_first_avenger_20.jpg", "images/captain_america_first_avenger_21.jpg", "images/captain_america_first_avenger_22.jpg"] },
+  { title: "The Avengers", images: ["images/the_avengers_01.jpg", "images/the_avengers_02.jpg", "images/the_avengers_03.jpg", "images/the_avengers_05.jpg", "images/the_avengers_06.jpg", "images/the_avengers_07.jpg", "images/the_avengers_08.jpg", "images/the_avengers_09.jpg", "images/the_avengers_10.jpg", "images/the_avengers_11.jpg", "images/the_avengers_12.jpg", "images/the_avengers_13.jpg", "images/the_avengers_14.jpg", "images/the_avengers_15.jpg", "images/the_avengers_16.jpg", "images/the_avengers_17.jpg", "images/the_avengers_18.jpg", "images/the_avengers_19.jpg", "images/the_avengers_20.jpg", "images/the_avengers_21.jpg", "images/the_avengers_22.jpg", "images/the_avengers_23.jpg", "images/the_avengers_24.jpg", "images/the_avengers_25.jpg"] },
+  { title: "Iron Man 3", images: ["images/iron_man_3_01.jpg", "images/iron_man_3_02.jpg", "images/iron_man_3_03.jpg", "images/iron_man_3_04.jpg", "images/iron_man_3_05.jpg", "images/iron_man_3_06.jpg", "images/iron_man_3_07.jpg", "images/iron_man_3_08.jpg", "images/iron_man_3_09.jpg", "images/iron_man_3_10.jpg", "images/iron_man_3_11.jpg", "images/iron_man_3_12.jpg", "images/iron_man_3_13.jpg", "images/iron_man_3_14.jpg", "images/iron_man_3_15.jpg", "images/iron_man_3_16.jpg", "images/iron_man_3_17.jpg", "images/iron_man_3_18.jpg", "images/iron_man_3_19.jpg", "images/iron_man_3_20.jpg", "images/iron_man_3_21.jpg", "images/iron_man_3_22.jpg", "images/iron_man_3_23.jpg"] },
+  { title: "Thor: The Dark World", images: ["images/thor_dark_world_01.jpg", "images/thor_dark_world_02.jpg", "images/thor_dark_world_03.jpg", "images/thor_dark_world_04.jpg", "images/thor_dark_world_05.jpg", "images/thor_dark_world_06.jpg", "images/thor_dark_world_07.jpg", "images/thor_dark_world_08.jpg", "images/thor_dark_world_09.jpg", "images/thor_dark_world_10.jpg", "images/thor_dark_world_11.jpg", "images/thor_dark_world_12.jpg", "images/thor_dark_world_13.jpg", "images/thor_dark_world_14.jpg", "images/thor_dark_world_15.jpg", "images/thor_dark_world_16.jpg", "images/thor_dark_world_17.jpg", "images/thor_dark_world_18.jpg", "images/thor_dark_world_19.jpg", "images/thor_dark_world_20.jpg", "images/thor_dark_world_21.jpg", "images/thor_dark_world_25.jpg"] },
+  { title: "Captain America: The Winter Soldier", images: ["images/winter_soldier_01.jpg", "images/winter_soldier_02.jpg", "images/winter_soldier_03.jpg", "images/winter_soldier_04.jpg", "images/winter_soldier_05.jpg", "images/winter_soldier_06.jpg", "images/winter_soldier_07.jpg", "images/winter_soldier_08.jpg", "images/winter_soldier_09.jpg", "images/winter_soldier_10.jpg", "images/winter_soldier_11.jpg", "images/winter_soldier_12.jpg", "images/winter_soldier_13.jpg", "images/winter_soldier_14.jpg", "images/winter_soldier_15.jpg", "images/winter_soldier_16.jpg", "images/winter_soldier_17.jpg", "images/winter_soldier_18.jpg", "images/winter_soldier_19.jpg", "images/winter_soldier_20.jpg", "images/winter_soldier_21.jpg", "images/winter_soldier_23.jpg", "images/winter_soldier_24.jpg"] },
+  { title: "Guardians of the Galaxy", images: ["images/guardians_of_the_galaxy_01.jpg", "images/guardians_of_the_galaxy_02.jpg", "images/guardians_of_the_galaxy_03.jpg", "images/guardians_of_the_galaxy_04.jpg", "images/guardians_of_the_galaxy_05.jpg", "images/guardians_of_the_galaxy_06.jpg", "images/guardians_of_the_galaxy_07.jpg", "images/guardians_of_the_galaxy_08.jpg", "images/guardians_of_the_galaxy_09.jpg", "images/guardians_of_the_galaxy_10.jpg", "images/guardians_of_the_galaxy_11.jpg", "images/guardians_of_the_galaxy_12.jpg", "images/guardians_of_the_galaxy_13.jpg", "images/guardians_of_the_galaxy_14.jpg", "images/guardians_of_the_galaxy_15.jpg", "images/guardians_of_the_galaxy_16.jpg", "images/guardians_of_the_galaxy_18.jpg", "images/guardians_of_the_galaxy_19.jpg", "images/guardians_of_the_galaxy_20.jpg", "images/guardians_of_the_galaxy_21.jpg", "images/guardians_of_the_galaxy_22.jpg", "images/guardians_of_the_galaxy_25.jpg"] },
+  { title: "Avengers: Age of Ultron", images: ["images/age_of_ultron_01.jpg", "images/age_of_ultron_02.jpg", "images/age_of_ultron_03.jpg", "images/age_of_ultron_04.jpg", "images/age_of_ultron_05.jpg", "images/age_of_ultron_06.jpg", "images/age_of_ultron_07.jpg", "images/age_of_ultron_08.jpg", "images/age_of_ultron_09.jpg", "images/age_of_ultron_10.jpg", "images/age_of_ultron_11.jpg", "images/age_of_ultron_12.jpg", "images/age_of_ultron_13.jpg", "images/age_of_ultron_15.jpg", "images/age_of_ultron_16.jpg", "images/age_of_ultron_17.jpg", "images/age_of_ultron_19.jpg", "images/age_of_ultron_20.jpg", "images/age_of_ultron_21.jpg", "images/age_of_ultron_22.jpg", "images/age_of_ultron_23.jpg"] },
+  { title: "Ant-Man", images: ["images/ant_man_01.jpg", "images/ant_man_02.jpg", "images/ant_man_03.jpg", "images/ant_man_04.jpg", "images/ant_man_05.jpg", "images/ant_man_06.jpg", "images/ant_man_07.jpg", "images/ant_man_08.jpg", "images/ant_man_09.jpg", "images/ant_man_10.jpg", "images/ant_man_11.jpg", "images/ant_man_12.jpg", "images/ant_man_13.jpg", "images/ant_man_14.jpg", "images/ant_man_15.jpg", "images/ant_man_16.jpg", "images/ant_man_17.jpg", "images/ant_man_18.jpg", "images/ant_man_19.jpg", "images/ant_man_25.jpg"] },
+  { title: "Captain America: Civil War", images: ["images/civil_war_01.jpg", "images/civil_war_02.jpg", "images/civil_war_03.jpg", "images/civil_war_04.jpg", "images/civil_war_05.jpg", "images/civil_war_06.jpg", "images/civil_war_07.jpg", "images/civil_war_08.jpg", "images/civil_war_09.jpg", "images/civil_war_10.jpg", "images/civil_war_11.jpg", "images/civil_war_12.jpg", "images/civil_war_13.jpg", "images/civil_war_14.jpg", "images/civil_war_15.jpg", "images/civil_war_16.jpg", "images/civil_war_17.jpg", "images/civil_war_18.jpg", "images/civil_war_19.jpg", "images/civil_war_20.jpg", "images/civil_war_21.jpg", "images/civil_war_22.jpg", "images/civil_war_23.jpg", "images/civil_war_25.jpg"] },
+  { title: "Doctor Strange", images: ["images/doctor_strange_01.jpg", "images/doctor_strange_02.jpg", "images/doctor_strange_03.jpg", "images/doctor_strange_04.jpg", "images/doctor_strange_05.jpg", "images/doctor_strange_06.jpg", "images/doctor_strange_07.jpg", "images/doctor_strange_08.jpg", "images/doctor_strange_09.jpg", "images/doctor_strange_10.jpg", "images/doctor_strange_11.jpg", "images/doctor_strange_12.jpg", "images/doctor_strange_13.jpg", "images/doctor_strange_14.jpg", "images/doctor_strange_15.jpg", "images/doctor_strange_16.jpg", "images/doctor_strange_17.jpg", "images/doctor_strange_18.jpg", "images/doctor_strange_19.jpg", "images/doctor_strange_20.jpg", "images/doctor_strange_21.jpg", "images/doctor_strange_24.jpg", "images/doctor_strange_25.jpg"] },
+  { title: "Guardians of the Galaxy Vol. 2", images: ["images/guardians_vol_2_01.jpg", "images/guardians_vol_2_02.jpg", "images/guardians_vol_2_03.jpg", "images/guardians_vol_2_04.jpg", "images/guardians_vol_2_05.jpg", "images/guardians_vol_2_06.jpg", "images/guardians_vol_2_07.jpg", "images/guardians_vol_2_08.jpg", "images/guardians_vol_2_09.jpg", "images/guardians_vol_2_10.jpg", "images/guardians_vol_2_11.jpg", "images/guardians_vol_2_12.jpg", "images/guardians_vol_2_13.jpg", "images/guardians_vol_2_14.jpg", "images/guardians_vol_2_15.jpg", "images/guardians_vol_2_16.jpg", "images/guardians_vol_2_17.jpg", "images/guardians_vol_2_18.jpg", "images/guardians_vol_2_19.jpg", "images/guardians_vol_2_20.jpg", "images/guardians_vol_2_21.jpg", "images/guardians_vol_2_22.jpg", "images/guardians_vol_2_23.jpg", "images/guardians_vol_2_24.jpg"] },
+  { title: "Spider-Man: Homecoming", images: ["images/spider_man_homecoming_01.jpg", "images/spider_man_homecoming_02.jpg", "images/spider_man_homecoming_03.jpg", "images/spider_man_homecoming_04.jpg", "images/spider_man_homecoming_05.jpg", "images/spider_man_homecoming_06.jpg", "images/spider_man_homecoming_07.jpg", "images/spider_man_homecoming_08.jpg", "images/spider_man_homecoming_09.jpg", "images/spider_man_homecoming_10.jpg", "images/spider_man_homecoming_11.jpg", "images/spider_man_homecoming_12.jpg", "images/spider_man_homecoming_13.jpg", "images/spider_man_homecoming_14.jpg", "images/spider_man_homecoming_15.jpg", "images/spider_man_homecoming_16.jpg", "images/spider_man_homecoming_17.jpg", "images/spider_man_homecoming_18.jpg", "images/spider_man_homecoming_19.jpg", "images/spider_man_homecoming_20.jpg", "images/spider_man_homecoming_22.jpg", "images/spider_man_homecoming_23.jpg"] },
+  { title: "Thor: Ragnarok", images: ["images/thor_ragnarok_02.jpg", "images/thor_ragnarok_03.jpg", "images/thor_ragnarok_04.jpg", "images/thor_ragnarok_05.jpg", "images/thor_ragnarok_06.jpg", "images/thor_ragnarok_07.jpg", "images/thor_ragnarok_08.jpg", "images/thor_ragnarok_09.jpg", "images/thor_ragnarok_10.jpg", "images/thor_ragnarok_11.jpg", "images/thor_ragnarok_12.jpg", "images/thor_ragnarok_13.jpg", "images/thor_ragnarok_14.jpg", "images/thor_ragnarok_15.jpg", "images/thor_ragnarok_16.jpg", "images/thor_ragnarok_17.jpg", "images/thor_ragnarok_18.jpg", "images/thor_ragnarok_19.jpg", "images/thor_ragnarok_20.jpg", "images/thor_ragnarok_21.jpg", "images/thor_ragnarok_22.jpg", "images/thor_ragnarok_25.jpg"] },
+  { title: "Black Panther", images: ["images/black_panther_01.jpg", "images/black_panther_02.jpg", "images/black_panther_03.jpg", "images/black_panther_04.jpg", "images/black_panther_05.jpg", "images/black_panther_06.jpg", "images/black_panther_07.jpg", "images/black_panther_08.jpg", "images/black_panther_09.jpg", "images/black_panther_10.jpg", "images/black_panther_11.jpg", "images/black_panther_12.jpg", "images/black_panther_13.jpg", "images/black_panther_14.jpg", "images/black_panther_15.jpg", "images/black_panther_16.jpg", "images/black_panther_17.jpg", "images/black_panther_18.jpg", "images/black_panther_19.jpg", "images/black_panther_20.jpg", "images/black_panther_21.jpg", "images/black_panther_22.jpg", "images/black_panther_23.jpg", "images/black_panther_24.jpg"] },
+  { title: "Avengers: Infinity War", images: ["images/infinity_war_01.jpg", "images/infinity_war_02.jpg", "images/infinity_war_03.jpg", "images/infinity_war_04.jpg", "images/infinity_war_05.jpg", "images/infinity_war_06.jpg", "images/infinity_war_07.jpg", "images/infinity_war_08.jpg", "images/infinity_war_09.jpg", "images/infinity_war_10.jpg", "images/infinity_war_11.jpg", "images/infinity_war_12.jpg", "images/infinity_war_13.jpg", "images/infinity_war_14.jpg", "images/infinity_war_15.jpg", "images/infinity_war_16.jpg", "images/infinity_war_17.jpg", "images/infinity_war_18.jpg", "images/infinity_war_19.jpg", "images/infinity_war_20.jpg", "images/infinity_war_21.jpg", "images/infinity_war_22.jpg", "images/infinity_war_23.jpg", "images/infinity_war_24.jpg", "images/infinity_war_25.jpg"] },
+  { title: "Ant-Man and the Wasp", images: ["images/ant_man_and_the_wasp_02.jpg", "images/ant_man_and_the_wasp_03.jpg", "images/ant_man_and_the_wasp_04.jpg", "images/ant_man_and_the_wasp_05.jpg", "images/ant_man_and_the_wasp_06.jpg", "images/ant_man_and_the_wasp_07.jpg", "images/ant_man_and_the_wasp_08.jpg", "images/ant_man_and_the_wasp_09.jpg", "images/ant_man_and_the_wasp_10.jpg", "images/ant_man_and_the_wasp_11.jpg", "images/ant_man_and_the_wasp_12.jpg", "images/ant_man_and_the_wasp_13.jpg", "images/ant_man_and_the_wasp_14.jpg", "images/ant_man_and_the_wasp_15.jpg", "images/ant_man_and_the_wasp_16.jpg", "images/ant_man_and_the_wasp_17.jpg", "images/ant_man_and_the_wasp_18.jpg", "images/ant_man_and_the_wasp_19.jpg", "images/ant_man_and_the_wasp_20.jpg", "images/ant_man_and_the_wasp_21.jpg", "images/ant_man_and_the_wasp_24.jpg"] },
+  { title: "Captain Marvel", images: ["images/captain_marvel_01.jpg", "images/captain_marvel_02.jpg", "images/captain_marvel_03.jpg", "images/captain_marvel_04.jpg", "images/captain_marvel_05.jpg", "images/captain_marvel_06.jpg", "images/captain_marvel_07.jpg", "images/captain_marvel_08.jpg", "images/captain_marvel_09.jpg", "images/captain_marvel_10.jpg", "images/captain_marvel_11.jpg", "images/captain_marvel_12.jpg", "images/captain_marvel_13.jpg", "images/captain_marvel_14.jpg", "images/captain_marvel_15.jpg", "images/captain_marvel_16.jpg", "images/captain_marvel_17.jpg", "images/captain_marvel_18.jpg", "images/captain_marvel_19.jpg", "images/captain_marvel_20.jpg", "images/captain_marvel_21.jpg", "images/captain_marvel_22.jpg", "images/captain_marvel_23.jpg"] },
+  { title: "Avengers: Endgame", images: ["images/endgame_02.jpg", "images/endgame_03.jpg", "images/endgame_04.jpg", "images/endgame_05.jpg", "images/endgame_06.jpg", "images/endgame_07.jpg", "images/endgame_08.jpg", "images/endgame_09.jpg", "images/endgame_10.jpg", "images/endgame_11.jpg", "images/endgame_12.jpg", "images/endgame_13.jpg", "images/endgame_14.jpg", "images/endgame_15.jpg", "images/endgame_16.jpg", "images/endgame_17.jpg", "images/endgame_18.jpg", "images/endgame_19.jpg", "images/endgame_20.jpg", "images/endgame_21.jpg", "images/endgame_22.jpg", "images/endgame_23.jpg", "images/endgame_24.jpg", "images/endgame_25.jpg"] }
 ];
 
 /*
@@ -1601,6 +1328,7 @@ function loadWorkingImageForMovie(movie, generation) {
 
         currentImage = testImage;
         lastImageByMovie.set(movie, imagePath);
+        if (window.updateReportedImageBadge) { window.updateReportedImageBadge(imagePath); }
         revealProgress = 0;
 
         resizeCanvas();
@@ -2970,6 +2698,298 @@ updateDifficultyDisplay();
 
 loadRandomMovie();
 
+
+/* ================================================================
+   GITHUB IMAGE REPORT SYSTEM - BEGIN
+   Uses only this public GitHub repository's Issues API.
+   Reporting does not skip the current image; the player must still
+   guess correctly before the game advances.
+   ================================================================ */
+(function installGitHubImageReports() {
+    'use strict';
+
+    const REPORTS_OWNER = "idan12go-sys";
+    const REPORTS_REPO = "Marvel-Movie-Guess";
+    const REPORT_TITLE_PREFIX = '[IMAGE REPORT]';
+    const API_BASE = `https://api.github.com/repos/${encodeURIComponent(REPORTS_OWNER)}/${encodeURIComponent(REPORTS_REPO)}/issues`;
+
+    let cachedReports = [];
+    let reportedImagePaths = new Set();
+    let lastFetchTime = 0;
+    let fetchPromise = null;
+
+    const controls = document.createElement('div');
+    controls.id = 'communityReportControls';
+
+    const reportButton = document.createElement('button');
+    reportButton.type = 'button';
+    reportButton.id = 'reportCurrentImageButton';
+    reportButton.className = 'community-report-button';
+    reportButton.textContent = 'REPORT IMAGE';
+    reportButton.title = 'Open a pre-filled GitHub issue for the current image';
+
+    const galleryButton = document.createElement('button');
+    galleryButton.type = 'button';
+    galleryButton.id = 'openReportedImagesButton';
+    galleryButton.className = 'community-report-button';
+    galleryButton.textContent = 'REPORTED IMAGES';
+    galleryButton.title = 'View images reported by visitors';
+
+    controls.append(reportButton, galleryButton);
+    document.body.appendChild(controls);
+
+    const imageContainer = document.querySelector('.image-container');
+    const badge = document.createElement('div');
+    badge.id = 'reportedImageBadge';
+    badge.textContent = 'IMAGE REPORTED';
+    if (imageContainer) imageContainer.appendChild(badge);
+
+    const modal = document.createElement('div');
+    modal.id = 'reportedImagesModal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'reportedImagesTitle');
+
+    const panel = document.createElement('div');
+    panel.id = 'reportedImagesPanel';
+
+    const header = document.createElement('div');
+    header.id = 'reportedImagesHeader';
+
+    const heading = document.createElement('h2');
+    heading.id = 'reportedImagesTitle';
+    heading.textContent = 'Reported Images';
+
+    const closeButton = document.createElement('button');
+    closeButton.type = 'button';
+    closeButton.id = 'closeReportedImagesButton';
+    closeButton.textContent = 'CLOSE';
+    closeButton.addEventListener('click', closeGallery);
+
+    header.append(heading, closeButton);
+
+    const status = document.createElement('p');
+    status.id = 'reportedImagesStatus';
+    status.textContent = 'Loading reports from GitHub...';
+
+    const grid = document.createElement('div');
+    grid.id = 'reportedImagesGrid';
+
+    panel.append(header, status, grid);
+    modal.appendChild(panel);
+    document.body.appendChild(modal);
+
+    function getCurrentImagePath() {
+        if (!currentMovie) return '';
+        return lastImageByMovie.get(currentMovie) || '';
+    }
+
+    function parseIssue(issue) {
+        if (!issue || issue.pull_request || !/^\[IMAGE REPORT\]/i.test(issue.title || '')) {
+            return null;
+        }
+
+        const body = String(issue.body || '');
+        const movieMatch = body.match(/^Movie:\s*(.+)$/im);
+        const imageMatch = body.match(/^Image:\s*(.+)$/im);
+        if (!imageMatch) return null;
+
+        const imagePath = imageMatch[1].trim();
+        // Only accept a local image inside this site's images folder.
+        if (!/^images\/[^\r\n]+$/i.test(imagePath) || imagePath.includes('..')) {
+            return null;
+        }
+
+        return {
+            movie: movieMatch ? movieMatch[1].trim() : 'Unknown movie',
+            imagePath,
+            issueUrl: issue.html_url || `https://github.com/${REPORTS_OWNER}/${REPORTS_REPO}/issues/${issue.number}`,
+            state: issue.state || 'open',
+            createdAt: issue.created_at || ''
+        };
+    }
+
+    async function fetchReports(forceRefresh) {
+        const now = Date.now();
+        if (!forceRefresh && now - lastFetchTime < 60000 && cachedReports.length >= 0) {
+            return cachedReports;
+        }
+        if (fetchPromise) return fetchPromise;
+
+        fetchPromise = (async () => {
+            const found = [];
+            const seenPaths = new Set();
+
+            for (let page = 1; page <= 10; page++) {
+                const url = `${API_BASE}?state=all&per_page=100&page=${page}&sort=created&direction=desc`;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/vnd.github+json',
+                        'X-GitHub-Api-Version': '2022-11-28'
+                    },
+                    cache: 'no-store'
+                });
+
+                if (!response.ok) {
+                    let detail = `GitHub returned HTTP ${response.status}.`;
+                    try {
+                        const errorData = await response.json();
+                        if (errorData && errorData.message) detail += ` ${errorData.message}`;
+                    } catch (_) {}
+                    throw new Error(detail);
+                }
+
+                const issues = await response.json();
+                if (!Array.isArray(issues)) throw new Error('GitHub returned an unexpected response.');
+
+                for (const issue of issues) {
+                    const report = parseIssue(issue);
+                    if (!report || seenPaths.has(report.imagePath)) continue;
+                    seenPaths.add(report.imagePath);
+                    found.push(report);
+                }
+
+                if (issues.length < 100) break;
+            }
+
+            cachedReports = found;
+            reportedImagePaths = new Set(found.map(report => report.imagePath));
+            lastFetchTime = Date.now();
+            const activePath = getCurrentImagePath();
+            if (activePath) updateReportedImageBadge(activePath);
+            return cachedReports;
+        })();
+
+        try {
+            return await fetchPromise;
+        } finally {
+            fetchPromise = null;
+        }
+    }
+
+    function updateReportedImageBadge(imagePath) {
+        if (!badge) return;
+        badge.style.display = imagePath && reportedImagePaths.has(imagePath) ? 'block' : 'none';
+    }
+
+    // Called by the existing game's image-load function after a frame loads.
+    window.updateReportedImageBadge = updateReportedImageBadge;
+
+    reportButton.addEventListener('click', function () {
+        const movieTitle = currentMovie ? currentMovie.title : '';
+        const imagePath = getCurrentImagePath();
+
+        if (!movieTitle || !imagePath || !currentImage || !currentImage.complete) {
+            window.alert('Please wait until the current image has loaded.');
+            return;
+        }
+
+        const fileName = imagePath.split('/').pop();
+        const title = `${REPORT_TITLE_PREFIX} ${fileName}`;
+        const body = [
+            'Please review this image in Marvel Movie Guess.',
+            '',
+            `Movie: ${movieTitle}`,
+            `Image: ${imagePath}`,
+            `Page: ${window.location.href}`,
+            '',
+            'Reason: The image may be black, show subtitles/text, be obstructed, or otherwise be unsuitable.'
+        ].join('\n');
+
+        const query = new URLSearchParams({ title, body });
+        const issueUrl = `https://github.com/${encodeURIComponent(REPORTS_OWNER)}/${encodeURIComponent(REPORTS_REPO)}/issues/new?${query.toString()}`;
+
+        // Deliberately do NOT call loadRandomMovie(). Solving the puzzle is
+        // still the only way to advance to the next image.
+        const opened = window.open(issueUrl, '_blank');
+        if (!opened) {
+            window.alert('Your browser blocked the GitHub tab. Please allow pop-ups for this site and try again.');
+            return;
+        }
+        opened.opener = null;
+    });
+
+    function clearGrid() {
+        while (grid.firstChild) grid.removeChild(grid.firstChild);
+    }
+
+    function renderGallery(reports) {
+        clearGrid();
+        status.textContent = reports.length
+            ? `${reports.length} reported image${reports.length === 1 ? '' : 's'} found in this GitHub repository.`
+            : 'There are no reported images yet.';
+
+        for (const report of reports) {
+            const card = document.createElement('article');
+            card.className = 'reported-image-card';
+
+            const image = document.createElement('img');
+            image.src = report.imagePath;
+            image.alt = report.imagePath.split('/').pop();
+            image.loading = 'lazy';
+            image.onerror = function () {
+                image.alt = 'Image file is missing from the website';
+                image.removeAttribute('src');
+            };
+
+            const info = document.createElement('div');
+            info.className = 'reported-image-card-info';
+
+            const movie = document.createElement('p');
+            movie.className = 'reported-image-movie';
+            movie.textContent = report.movie;
+
+            const filename = document.createElement('p');
+            filename.className = 'reported-image-filename';
+            filename.textContent = report.imagePath.split('/').pop();
+
+            const link = document.createElement('a');
+            link.className = 'reported-image-link';
+            link.href = report.issueUrl;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = 'View GitHub report';
+
+            info.append(movie, filename, link);
+            card.append(image, info);
+            grid.appendChild(card);
+        }
+    }
+
+    async function openGallery() {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        status.textContent = 'Loading reports from GitHub...';
+        clearGrid();
+
+        try {
+            const reports = await fetchReports(true);
+            renderGallery(reports);
+        } catch (error) {
+            status.textContent = `Could not load GitHub reports: ${error.message}`;
+        }
+    }
+
+    function closeGallery() {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    galleryButton.addEventListener('click', openGallery);
+    modal.addEventListener('click', function (event) {
+        if (event.target === modal) closeGallery();
+    });
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && modal.style.display === 'flex') closeGallery();
+    });
+
+    // Fetch once so reported images are labelled during normal gameplay.
+    fetchReports(false).catch(error => {
+        console.warn('Could not load community image reports from GitHub:', error);
+    });
+})();
+/* GITHUB IMAGE REPORT SYSTEM - END */
 </script>
 
 </body>
