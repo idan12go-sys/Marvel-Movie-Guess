@@ -219,6 +219,34 @@
         }
 
         /*
+        ======================================================
+        DIFFICULTY / IMAGE CLARITY INDICATOR
+        ======================================================
+        */
+
+        .difficulty-status {
+
+            margin-top: 12px;
+
+            color: #ddd;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            letter-spacing: 0.4px;
+
+        }
+
+        .difficulty-status .level-number {
+
+            color: #fff;
+
+            font-weight: 800;
+
+        }
+
+        /*
 
         ======================================================
 
@@ -594,6 +622,13 @@
 
         ></canvas>
 
+    </div>
+
+    <div class="difficulty-status" aria-live="polite">
+        Image clarity: Level
+        <span id="clarityLevel" class="level-number">1</span>
+        /
+        <span id="clarityTotal" class="level-number">7</span>
     </div>
 
     <div class="search-area">
@@ -1138,9 +1173,24 @@ let answerLocked = false;
 
 let revealProgress = 0;
 
+// Seven image-clarity levels: each number is the pixel block size.
+// Larger blocks are harder; smaller blocks reveal more detail.
+const pixelationLevels = [30, 24, 18, 13, 8, 4, 1];
+
+// Increase clarity after every two incorrect movie guesses.
+const WRONG_GUESSES_PER_LEVEL = 2;
+
+let wrongGuessCount = 0;
+
 // Images and movies that fail to load are skipped for this page session.
 const brokenImages = new Set();
 const brokenMovies = new Set();
+
+// Each movie gets a shuffled image deck. An image is not reused for that
+// movie until every other working image in its deck has been shown once.
+const movieImageBags = new Map();
+const lastImageByMovie = new Map();
+
 let imageLoadGeneration = 0;
 let nextMovieTimer = null;
 let revealFrameId = null;
@@ -1216,6 +1266,61 @@ const hintButton =
         "hintButton"
 
     );
+
+
+const clarityLevelElement =
+
+    document.getElementById(
+
+        "clarityLevel"
+
+    );
+
+const clarityTotalElement =
+
+    document.getElementById(
+
+        "clarityTotal"
+
+    );
+
+
+function getPixelationLevelIndex() {
+
+    return Math.min(
+
+        Math.floor(
+
+            wrongGuessCount / WRONG_GUESSES_PER_LEVEL
+
+        ),
+
+        pixelationLevels.length - 1
+
+    );
+
+}
+
+
+function updateDifficultyDisplay() {
+
+    const levelIndex = getPixelationLevelIndex();
+
+    clarityLevelElement.textContent =
+
+        String(levelIndex + 1);
+
+    clarityTotalElement.textContent =
+
+        String(pixelationLevels.length);
+
+    if (currentImage && currentImage.complete && currentImage.naturalWidth > 0) {
+
+        drawPixelatedImage();
+
+    }
+
+}
 
 /*
 
@@ -1315,9 +1420,53 @@ LOAD RANDOM MOVIE
 
 */
 
-function loadRandomMovie() {
+function shuffleArray(items) {
+    const shuffled = [...items];
 
-    // Invalidate any older asynchronous image load or reveal animation.
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    return shuffled;
+}
+
+
+function prepareMovieImageBag(movie) {
+    // Keep any unused images already waiting in this movie's deck.
+    let bag = movieImageBags.get(movie) || [];
+    bag = bag.filter(imagePath => !brokenImages.has(imagePath));
+
+    // When the deck is empty, start a new shuffled cycle using only
+    // unique, working filenames from this movie.
+    if (bag.length === 0) {
+        const validImages = [...new Set(
+            (Array.isArray(movie.images) ? movie.images : [])
+                .filter(imagePath =>
+                    typeof imagePath === 'string' &&
+                    imagePath.trim() !== '' &&
+                    !brokenImages.has(imagePath)
+                )
+        )];
+
+        bag = shuffleArray(validImages);
+
+        // Avoid showing the same image at the boundary between two cycles
+        // whenever this movie has more than one working image.
+        const previousImage = lastImageByMovie.get(movie);
+        if (bag.length > 1 && bag[bag.length - 1] === previousImage) {
+            const swapIndex = Math.floor(Math.random() * (bag.length - 1));
+            [bag[bag.length - 1], bag[swapIndex]] =
+                [bag[swapIndex], bag[bag.length - 1]];
+        }
+    }
+
+    movieImageBags.set(movie, bag);
+}
+
+
+function loadRandomMovie() {
+    // Invalidate callbacks and animations belonging to an older round.
     imageLoadGeneration++;
     const generation = imageLoadGeneration;
 
@@ -1336,6 +1485,7 @@ function loadRandomMovie() {
     currentMovie = null;
     currentImage = null;
     revealProgress = 0;
+    wrongGuessCount = 0;
     selectedMovie = null;
     selectedIndex = -1;
     hintUsed = false;
@@ -1348,22 +1498,22 @@ function loadRandomMovie() {
 
     result.textContent = 'Loading image...';
     result.className = 'result';
+    updateDifficultyDisplay();
     hideDropdown();
     clearGameCanvas();
 
-    // Exclude movies already used this cycle and movies with no working images.
+    // Avoid repeating a movie until every playable movie has appeared.
     let availableMovies = movies.filter(movie =>
         !usedMovies.includes(movie) && !brokenMovies.has(movie)
     );
 
-    // Start a new cycle when every remaining usable movie has appeared.
+    // Start a new movie cycle when all remaining playable movies were used.
     if (availableMovies.length === 0) {
-        const moviesWithPossibleImages = movies.filter(movie =>
-            !brokenMovies.has(movie)
-        );
+        const playableMovies = movies.filter(movie => !brokenMovies.has(movie));
 
-        if (moviesWithPossibleImages.length === 0) {
-            result.textContent = 'No working movie images were found. Check the images folder and filenames.';
+        if (playableMovies.length === 0) {
+            result.textContent =
+                'No working movie images were found. Check the images folder and filenames.';
             result.className = 'result wrong';
             answerInput.disabled = true;
             guessButton.disabled = true;
@@ -1372,14 +1522,15 @@ function loadRandomMovie() {
         }
 
         usedMovies = [];
-        availableMovies = moviesWithPossibleImages;
+        availableMovies = playableMovies;
     }
 
-    // Choose a random movie, then try its images one by one until one loads.
     const randomIndex = Math.floor(Math.random() * availableMovies.length);
     currentMovie = availableMovies[randomIndex];
     usedMovies.push(currentMovie);
 
+    // Set up this movie's no-repeat image deck, then load from it.
+    prepareMovieImageBag(currentMovie);
     loadWorkingImageForMovie(currentMovie, generation);
 }
 
@@ -1400,27 +1551,29 @@ function clearGameCanvas() {
 
 
 function loadWorkingImageForMovie(movie, generation) {
-
-    // Ignore callbacks belonging to an older round.
+    // Ignore delayed callbacks belonging to an older round.
     if (generation !== imageLoadGeneration || movie !== currentMovie) {
         return;
     }
 
-    // Keep the original image names exactly as entered in the movie database.
-    const imagesToTry = (Array.isArray(movie.images) ? movie.images : [])
-        .filter(imagePath => !brokenImages.has(imagePath));
+    const bag = movieImageBags.get(movie) || [];
 
-    // If none of this movie's images work, skip the entire movie.
-    if (imagesToTry.length === 0) {
+    // If every remaining image in this deck failed, mark this movie unusable.
+    if (bag.length === 0) {
         brokenMovies.add(movie);
-        console.warn('Skipping movie: all images failed to load:', movie.title);
+        movieImageBags.set(movie, []);
+
+        console.warn(
+            'Skipping movie; every image failed to load:',
+            movie.title
+        );
 
         result.textContent = `Skipping ${movie.title}: no working images.`;
         result.className = 'result hint';
 
-        // Use a new task rather than deep recursion if many movies are broken.
+        // Schedule the next movie without deep recursion.
         setTimeout(() => {
-            if (generation === imageLoadGeneration) {
+            if (generation === imageLoadGeneration && movie === currentMovie) {
                 loadRandomMovie();
             }
         }, 0);
@@ -1428,9 +1581,11 @@ function loadWorkingImageForMovie(movie, generation) {
         return;
     }
 
-    // Randomize the order so every remaining image has a chance to appear.
-    const randomIndex = Math.floor(Math.random() * imagesToTry.length);
-    const imagePath = imagesToTry[randomIndex];
+    // Consume the next image from this movie's shuffled deck.
+    // It will not be selected again until this movie's deck is exhausted.
+    const imagePath = bag.pop();
+    movieImageBags.set(movie, bag);
+
     const testImage = new Image();
 
     testImage.onload = function () {
@@ -1438,7 +1593,6 @@ function loadWorkingImageForMovie(movie, generation) {
             return;
         }
 
-        // Treat an empty/invalid decoded image as a failed image too.
         if (!testImage.naturalWidth || !testImage.naturalHeight) {
             brokenImages.add(imagePath);
             loadWorkingImageForMovie(movie, generation);
@@ -1446,6 +1600,7 @@ function loadWorkingImageForMovie(movie, generation) {
         }
 
         currentImage = testImage;
+        lastImageByMovie.set(movie, imagePath);
         revealProgress = 0;
 
         resizeCanvas();
@@ -1467,13 +1622,13 @@ function loadWorkingImageForMovie(movie, generation) {
             return;
         }
 
-        // Remember the broken path and try another image for this same movie.
+        // Remember the failed filename and continue with the next unused image.
         brokenImages.add(imagePath);
         console.warn('Skipping unavailable image:', imagePath);
         loadWorkingImageForMovie(movie, generation);
     };
 
-    // Do not change the path: it remains exactly as written in movies[].images.
+    // Do not change the path: it is exactly as listed in movies[].images.
     testImage.src = imagePath;
 }
 
@@ -1610,41 +1765,29 @@ function drawPixelatedImage() {
 
     /*
 
-    Bigger number = more pixelated.
+    Pixel size is controlled by the current difficulty level.
+    More wrong guesses = smaller pixel blocks = higher resolution.
+    On a correct answer, revealProgress animates the image to full clarity.
 
     */
 
-    const startPixelSize =
+    const levelIndex = getPixelationLevelIndex();
 
-        20;
+    const startPixelSize = pixelationLevels[levelIndex];
 
-    const endPixelSize =
+    const pixelSize = Math.max(
 
-        1;
+        1,
 
-    const pixelSize =
+        Math.round(
 
-        Math.max(
+            startPixelSize -
 
-            endPixelSize,
+            (startPixelSize - 1) * revealProgress
 
-            Math.round(
+        )
 
-                startPixelSize -
-
-                (
-
-                    startPixelSize -
-
-                    endPixelSize
-
-                ) *
-
-                revealProgress
-
-            )
-
-        );
+    );
 
     /*
 
@@ -2626,6 +2769,15 @@ function checkAnswer() {
 
     );
 
+    // Count this incorrect guess and raise the image clarity every two mistakes.
+    wrongGuessCount++;
+
+    const previousLevel = getPixelationLevelIndex();
+
+    updateDifficultyDisplay();
+
+    const newLevel = getPixelationLevelIndex();
+
     /*
 
     Clear selected movie.
@@ -2656,9 +2808,25 @@ function checkAnswer() {
 
     */
 
-    result.textContent =
+    if (newLevel > previousLevel) {
 
-        `"${guessedMovie.title}" is not correct.`;
+        result.textContent =
+
+            `"${guessedMovie.title}" is not correct. Image clarity increased to Level ${newLevel + 1}/${pixelationLevels.length}.`;
+
+    } else {
+
+        const guessesUntilNextLevel =
+
+            WRONG_GUESSES_PER_LEVEL -
+
+            (wrongGuessCount % WRONG_GUESSES_PER_LEVEL);
+
+        result.textContent =
+
+            `"${guessedMovie.title}" is not correct. ${guessesUntilNextLevel} more wrong guess${guessesUntilNextLevel === 1 ? "" : "es"} to increase image clarity.`;
+
+    }
 
     result.className =
 
@@ -2797,6 +2965,8 @@ START
 */
 
 resizeCanvas();
+
+updateDifficultyDisplay();
 
 loadRandomMovie();
 
